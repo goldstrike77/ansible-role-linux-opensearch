@@ -1,0 +1,74 @@
+---
+- name: Install the ElasticSearch exporter packages.
+  package:
+    name: '{{ opensearch_exporter_packages }}'
+    state: 'present'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 5
+  delay: 2
+
+- name: ElasticSearch exporter configure file transfer.
+  template:
+    src: 'elasticsearch_exporter.default.j2'
+    dest: '/etc/default/elasticsearch_exporter'
+    owner: 'prometheus'
+    group: 'prometheus'
+    mode: '0640'
+  notify: Restart ElasticSearch exporter service.
+
+- name: LogStash exporter program binary transfer.
+  unarchive:
+    src: 'logstash_exporter.tar.xz'
+    dest: '/usr/local/bin'
+    owner: 'logstash'
+    group: 'logstash'
+    mode: '0755'
+  notify: Restart LogStash exporter service.
+
+- name: LogStash exporter configure file transfer.
+  template:
+    src: 'logstash_exporter.j2'
+    dest: '/etc/default/logstash_exporter'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: Restart LogStash exporter service.
+
+- name: LogStash service file transfer.
+  copy:
+    src: 'logstash_exporter.service'
+    dest: '/lib/systemd/system'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: Restart LogStash exporter service.
+
+- name: Kibana exporter program binary transfer.
+  unarchive:
+    src: 'kibana_exporter.tar.xz'
+    dest: '/usr/local/bin'
+    owner: 'kibana'
+    group: 'kibana'
+    mode: '0755'
+  notify: Restart Kibana exporter service.
+
+- name: Kibana exporter configure file transfer.
+  template:
+    src: 'kibana_exporter.default.j2'
+    dest: '/etc/default/kibana_exporter'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: Restart Kibana exporter service.
+
+- name: Kibana service file transfer.
+  copy:
+    src: 'kibana_exporter.service'
+    dest: '/lib/systemd/system'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: Restart Kibana exporter service.

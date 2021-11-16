@@ -1,0 +1,18 @@
+---
+opensearch_repo:
+  - name: 'opensearch'
+    desc: 'Release RPM artifacts of opensearchForElasticsearch'
+    url: 'http://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/'
+  - name: 'elasticsearch-oss-7.x'
+    desc: 'Elasticsearch repository for 7.x packages'
+    url: 'http://cache.omygods.com/elasticsearch-7.x/'
+
+opensearch_packages:
+  - 'python-pip'
+  - 'opensearchforelasticsearch-{{ opensearch_version }}-1'
+  - 'opensearchforelasticsearch-kibana-{{ opensearch_version }}-1'
+  - 'logstash-oss-{{ opensearch_logstash_version }}'
+
+opensearch_exporter_repo_name: 'prometheus'
+opensearch_exporter_repo_url: 'http://cache.omygods.com/prometheus-rpm/release/el/$releasever/$basearch/'
+opensearch_exporter_packages: 'elasticsearch_exporter'

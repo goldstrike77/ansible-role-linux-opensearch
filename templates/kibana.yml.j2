@@ -1,0 +1,30 @@
+server.port: {{ opensearch_port.kibana | default('5601') }}
+server.host: "{{ ansible_default_ipv4.address }}"
+server.name: "{{ ansible_hostname | lower }}"
+status.allowAnonymous: true
+server.ssl.enabled: true
+server.ssl.certificate: /etc/kibana/ssl/server.crt
+server.ssl.key: /etc/kibana/ssl/server.key
+server.ssl.certificateAuthorities: /etc/kibana/ssl/ca-cert.pem
+server.ssl.clientAuthentication: none
+server.ssl.supportedProtocols: ["TLSv1.2"]
+server.ssl.cipherSuites: ["TLS_AES_256_GCM_SHA384","TLS_CHACHA20_POLY1305_SHA256","TLS_AES_128_GCM_SHA256","ECDHE-RSA-AES128-GCM-SHA256,","ECDHE-ECDSA-AES128-GCM-SHA256,","ECDHE-RSA-AES256-GCM-SHA384,","ECDHE-ECDSA-AES256-GCM-SHA384,","DHE-RSA-AES128-GCM-SHA256,","ECDHE-RSA-AES128-SHA256,","DHE-RSA-AES128-SHA256,","ECDHE-RSA-AES256-SHA384,","DHE-RSA-AES256-SHA384,","ECDHE-RSA-AES256-SHA256,","DHE-RSA-AES256-SHA256,","HIGH,!aNULL,","!eNULL,","!EXPORT,","!DES,","!RC4,","!MD5,","!PSK,","!SRP,","!CAMELLIA"]
+logging.quiet: true
+logging.json: false
+elasticsearch.hosts: https://{{ ansible_default_ipv4.address }}:{{ opensearch_port.rest }}
+elasticsearch.ssl.verificationMode: none
+elasticsearch.username: kibanaserver
+elasticsearch.password: {{ opensearch_kibanaserver_pass }}
+elasticsearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
+opensearch_security.multitenancy.enabled: true
+opensearch_security.multitenancy.tenants.preferred: ["Private", "Global"]
+opensearch_security.readonly_mode.roles: ["kibana_read_only"]
+opensearch_security.cookie.secure: true
+newsfeed.enabled: false
+telemetry.optIn: false
+telemetry.enabled: false
+security.showInsecureClusterWarning: false
+server.rewriteBasePath: {{ opensearch_kibana_proxy | bool | to_json }}
+{% if opensearch_kibana_proxy | bool %}
+server.basePath: "/kibana"
+{% endif %}

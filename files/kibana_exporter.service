@@ -1,0 +1,17 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Prometheus exporter for machine metrics, written in Go with pluggable metric collectors.
+Documentation=https://github.com/chamilad/kibana-prometheus-exporter
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/default/kibana_exporter
+User=kibana
+LimitNOFILE=4096
+LimitNPROC=4096
+ExecStart=/usr/local/bin/kibana_exporter $KIBANA_EXPORTER_OPTS
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,2 +1,58 @@
 ---
-# vars file for ansible-role-linux-opensearch
+opensearch_servers: "\
+  {% set _opensearch_servers = [] %}\
+  {% for host in groups[group_names[0]] %}\
+    {% set _opensearch_cluster = opensearch_cluster | default('', true) %}\
+    {% if ( _opensearch_cluster == opensearch_cluster) %}\
+      {% if _opensearch_servers.append(hostvars[host]['ansible_host']) %}{% endif %}\
+    {% endif %}\
+  {% endfor %}\
+  {{ _opensearch_servers }}"
+
+opensearch_kernel_parameters:
+  - { variable: 'vm.max_map_count', value: '262144' }
+  - { variable: 'vm.swappiness', value: '10' }
+  - { variable: 'net.core.somaxconn', value: '65535' }
+  - { variable: 'net.core.netdev_max_backlog', value: '262144' }
+  - { variable: 'net.core.rmem_max', value: '2097152' }
+  - { variable: 'net.core.rmem_default', value: '2097152' }
+  - { variable: 'net.ipv4.udp_rmem_min', value: '16384' }
+  - { variable: 'net.ipv4.udp_mem', value: '2097152 4194304 8388608' }
+
+opensearch_conf:
+  - { src: 'elasticsearch.yml', dest: '/etc/elasticsearch/elasticsearch.yml', mode: '640', owner: 'elasticsearch' }
+  - { src: 'elasticsearch.service', dest: '/lib/systemd/system/elasticsearch.service', mode: '644', owner: 'root' }
+  - { src: 'elasticsearch', dest: '/etc/sysconfig/elasticsearch', mode: '644', owner: 'elasticsearch' }
+  - { src: 'opensearch-performance-analyzer.service', dest: '/lib/systemd/system/opensearch-performance-analyzer.service', mode: '644', owner: 'root' }
+  - { src: 'jvm.options.elasticsearch', dest: '/etc/elasticsearch/jvm.options', mode: '644', owner: 'elasticsearch' }
+  - { src: 'internal_users.yml', dest: '/usr/share/elasticsearch/plugins/opensearch_security/securityconfig/internal_users.yml', mode: '644', owner: 'elasticsearch' }
+  - { src: 'performance-analyzer.properties', dest: '/usr/share/elasticsearch/plugins/opensearch-performance-analyzer/pa_config/performance-analyzer.properties', mode: '644', owner: 'root' }
+
+opensearch_logstash_conf:
+  - { src: 'jvm.options.logstash', dest: '/etc/logstash/jvm.options', mode: '644', owner: 'root' }
+  - { src: 'logstash.yml', dest: '/etc/logstash/logstash.yml', mode: '644', owner: 'root' }
+
+opensearch_exporter_collector:
+#  - 'es.all'
+  - 'es.cluster_settings'
+  - 'es.indices'
+  - 'es.indices_settings'
+  - 'es.shards'
+  - 'es.snapshots'
+
+opensearch_tmpdir: '/var/run/elasticsearch'
+
+# Internal user password
+opensearch_kibanaserver_pass: '{{ lookup("password", "" + group_names[0] + ":kibanaserver length=12 chars=ascii_letters,digits") }}'
+opensearch_kibanaro_pass: '{{ lookup("password", "" + group_names[0] + ":kibanaro length=12 chars=ascii_letters,digits") }}'
+opensearch_logstash_pass: '{{ lookup("password", "" + group_names[0] + ":logstash length=12 chars=ascii_letters,digits") }}'
+opensearch_readall_pass: '{{ lookup("password", "" + group_names[0] + ":readall length=12 chars=ascii_letters,digits") }}'
+opensearch_snapshotrestore_pass: '{{ lookup("password", "" + group_names[0] + ":snapshotrestore length=12 chars=ascii_letters,digits") }}'
+
+opensearch_python_dependent_packages:
+  - 'pip==20.3.4'
+  - 'paramiko==2.4.3'
+  - 'pyopenssl==19.0.0'
+  - 'cryptography==2.4.2'
+
+opensearch_pypi_url: 'mirrors.aliyun.com'

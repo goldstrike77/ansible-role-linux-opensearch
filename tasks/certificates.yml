@@ -1,0 +1,66 @@
+---
+- name: Check private key exists.
+  stat:
+    path: '/etc/elasticsearch/ssl/server.key'
+  register: check_cert_keys
+
+- name: Certificate Signing operation.
+  block:
+    - name: Install requirement python package.
+      pip:
+        name: '{{ opensearch_python_dependent_packages }}'
+        state: 'forcereinstall'
+        extra_args: '--default-timeout=120 -i https://{{ opensearch_pypi_url }}/pypi/simple/ --trusted-host {{ opensearch_pypi_url }}'
+      register: opensearch_python_status
+      until: opensearch_python_status is succeeded
+      retries: 5
+      delay: 2
+    - name: Selfsigned CA file transfer.
+      synchronize:
+        src: 'files/ssl'
+        dest: '/etc/{{ item }}'
+        owner: false
+        group: false
+        mode: 'push'
+      loop:
+        - 'elasticsearch'
+        - 'kibana'
+    - name: "Generate an OpenSSL private key with PKCS #8 format."
+      shell: 'openssl genpkey -out /etc/{{ item }}/ssl/server.key -algorithm RSA -pkeyopt rsa_keygen_bits:4096'
+      loop:
+        - 'elasticsearch'
+        - 'kibana'
+    - name: Generate an OpenSSL Certificate Signing Request.
+      openssl_csr:
+        path: '/etc/{{ item }}/ssl/server.csr'
+        privatekey_path: '/etc/{{ item }}/ssl/server.key'
+        select_crypto_backend: 'cryptography'
+        common_name: '{{ opensearch_cluster| upper }}'
+        subject_alt_name:
+          - 'DNS:{{ ansible_hostname }}'
+          - 'DNS:{{ ansible_fqdn }}'
+          - 'DNS:{{ ansible_default_ipv4.address }}'
+          - 'DNS:*.service.{{ datacenter }}.{{ domain }}'
+          - 'IP:{{ ansible_default_ipv4.address }}'
+        owner: '{{ item }}'
+        mode: '640'
+        state: 'present'
+      loop:
+        - 'elasticsearch'
+        - 'kibana'
+    - name: Generate an OpenSSL certificate signed with your own CA certificate.
+      openssl_certificate:
+        path: '/etc/{{ item }}/ssl/server.crt'
+        csr_path: '/etc/{{ item }}/ssl/server.csr'
+        ownca_path: '/etc/{{ item }}/ssl/ca-cert.pem'
+        ownca_privatekey_path: '/etc/{{ item }}/ssl/ca-key.pem'
+        select_crypto_backend: 'cryptography'
+        ownca_not_after: '+7305d'
+        provider: 'ownca'
+        owner: '{{ item }}'
+        mode: '640'
+        state: 'present'
+      loop:
+        - 'elasticsearch'
+        - 'kibana'
+  when: not check_cert_keys.stat.exists or check_cert_keys.stat.size == 0

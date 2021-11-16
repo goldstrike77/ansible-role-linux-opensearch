@@ -1,0 +1,20 @@
+---
+- name: Open Distro configuration file transfer.
+  template:
+    src: '{{ item.src }}.j2'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.owner }}'
+    mode: '{{ item.mode }}'
+  loop: '{{ opensearch_conf }}'
+  notify: Restart ElasticSearch service.
+
+- name: Open Distro internal users password outputs.
+  template:
+    src: 'opensearch_internal_users.passwd.j2'
+    dest: '/tmp/opensearch_internal_users.passwd'
+    mode: '0600'
+    owner: 'root'
+    group: 'root'
+  when: opensearch_servers[0] in ansible_default_ipv4.address
+  no_log: true

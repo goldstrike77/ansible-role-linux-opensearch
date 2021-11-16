@@ -1,0 +1,68 @@
+cluster.name: {{ opensearch_cluster | upper }}
+node.name: {{ ansible_hostname | lower }}
+path.data: {{ opensearch_path }}/elasticsearch
+path.logs: /var/log/elasticsearch
+bootstrap.memory_lock: {{ opensearch_memory_lock | bool | to_json }}
+network.host: {{ ansible_default_ipv4.address }} 
+http.port: {{ opensearch_port.rest }}
+discovery.seed_hosts: ['{{ opensearch_servers | list | join(":" + opensearch_port.transport + "', '") }}:{{ opensearch_port.transport }}']
+cluster.initial_master_nodes: ['{{ opensearch_servers | list | join(":" + opensearch_port.transport + "', '") }}:{{ opensearch_port.transport }}']
+cluster.max_shards_per_node: {{ opensearch_es_arg.cluster_max_shards_per_node | default('1000') }}
+action.destructive_requires_name: {{ opensearch_es_arg.action_destructive_requires_name | bool | to_json }}
+http.compression: {{ opensearch_es_arg.http_compression | bool | to_json }}
+http.cors.enabled: {{ opensearch_es_arg.http_cors_enabled | bool | to_json }}
+http.cors.allow-methods: {{ opensearch_es_arg.http_cors_allow_methods }}
+opensearch_security.ssl.transport.pemcert_filepath: ssl/server.crt
+opensearch_security.ssl.transport.pemkey_filepath: ssl/server.key
+opensearch_security.ssl.transport.pemtrustedcas_filepath: ssl/ca-cert.pem
+opensearch_security.ssl.transport.enforce_hostname_verification: false
+opensearch_security.ssl.transport.resolve_hostname: false
+opensearch_security.ssl.transport.enabled_protocols:
+  - "TLSv1.2"
+opensearch_security.ssl.transport.enabled_ciphers:
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256" 
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA"
+opensearch_security.ssl.http.enabled: true
+opensearch_security.ssl.http.clientauth_mode: NONE
+opensearch_security.ssl.http.enabled_protocols:
+  - "TLSv1.2"
+opensearch_security.ssl.http.enabled_ciphers:
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA"
+opensearch_security.ssl.http.pemcert_filepath: ssl/server.crt
+opensearch_security.ssl.http.pemkey_filepath: ssl/server.key
+opensearch_security.ssl.http.pemtrustedcas_filepath: ssl/ca-cert.pem
+opensearch_security.allow_unsafe_democertificates: true
+opensearch_security.allow_default_init_securityindex: true
+opensearch_security.authcz.admin_dn:
+  - CN={{ opensearch_cluster| upper }}
+opensearch_security.nodes_dn:
+  - CN={{ opensearch_cluster| upper }}
+opensearch_security.audit.type: internal_elasticsearch
+opensearch_security.enable_snapshot_restore_privilege: true
+opensearch_security.check_snapshot_restore_write_privileges: true
+opensearch_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+opensearch_security.system_indices.enabled: true
+opensearch_security.system_indices.indices: [".opensearch-alerting-config", ".opensearch-alerting-alert*", ".opensearch-anomaly-results*", ".opensearch-anomaly-detector*", ".opensearch-anomaly-checkpoints", ".opensearch-anomaly-detection-state", ".opensearch-reports-*", ".opensearch-notifications-*", ".opensearch-notebooks", ".opensearch-asynchronous-search-response*"]
+cluster.routing.allocation.disk.threshold_enabled: false
+node.max_local_storage_nodes: {{ opensearch_servers | length | int }} 

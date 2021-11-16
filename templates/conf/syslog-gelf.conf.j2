@@ -1,0 +1,33 @@
+input {
+  gelf {
+    port => {{ item.port }}
+    type => gelf
+    use_{{ item.protocol | lower }} => true
+    tags => ["syslog-gelf"]
+  }
+}
+
+filter {
+  fingerprint {
+    target => "[@metadata][uuid]"
+    method => "UUID"
+  }
+}
+
+output {
+  if "syslog-gelf" in[tags]{
+    elasticsearch {
+      hosts => ['{{ opensearch_servers | list | join(":" + opensearch_port.rest + "', '") }}:{{ opensearch_port.rest }}']
+      ssl_certificate_verification => false
+      ssl => true
+      user => "logstash"
+      ilm_enabled => false
+      password => "{{ lookup("password", "" + group_names[0] + ":logstash length=12 chars=ascii_letters,digits") }}"
+      index => "logstash-syslog-gelf-%{+YYYY.MM.dd}"
+      template => "/etc/logstash/template/logstash-syslog-gelf-template.json"
+      template_name => "logstash-syslog-gelf"
+      template_overwrite => true
+      document_id => "%{[@metadata][uuid]}"
+    }
+  }
+}

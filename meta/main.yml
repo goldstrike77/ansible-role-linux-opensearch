@@ -47,7 +47,56 @@ galaxy_info:
     # NOTE: A tag is limited to a single word comprised of alphanumeric characters.
     #       Maximum 20 tags per role.
 
-dependencies: []
+dependencies:
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
   # if you add dependencies to this list.
-  
+  - role: 'ansible-role-linux-nginx'
+    vars:
+      ngx_block_agents: true
+      ngx_block_string: true
+      ngx_compress: true
+      ngx_port_http: '{{ opensearch_ngx_port_http }}'
+      ngx_port_https: '{{ opensearch_ngx_port_https }}'
+      ngx_ssl_protocols: 'modern'
+      ngx_site_path: '{{ opensearch_path }}/nginx/site'
+      ngx_logs_path: '{{ opensearch_path }}/nginx/logs'
+      ngx_proxy_read_timeout: '60'
+      ngx_proxy_send_timeout: '60'
+      ngx_allow_methods:
+        - 'POST'
+        - 'PUT'
+        - 'GET'
+        - 'HEAD'
+        - 'DELETE'
+      ngx_header:
+        - 'Referrer-Policy "no-referrer-when-downgrade";'
+        - 'Strict-Transport-Security "max-age=31536000; includeSubDomains; preload;";'
+        - 'X-Content-Type-Options "nosniff";'
+        - 'X-Frame-Options "SAMEORIGIN";'
+        - 'X-Xss-Protection "1; mode=block";'
+      ngx_site:
+        - domain: '{{ opensearch_ngx_domain }}'
+          syntax:
+            - 'location / {'
+            - '  expires off;'
+            - '  proxy_buffering off;'
+            - '  proxy_connect_timeout 30;'
+            - '  proxy_http_version 1.1;'
+            - '  proxy_read_timeout 60;'
+            - '  proxy_redirect off;'
+            - '  proxy_send_timeout 60;'
+            - '  proxy_set_header Connection "Keep-Alive";'
+            - '  proxy_set_header Host $host;'
+            - '  proxy_set_header Proxy-Connection "Keep-Alive";'
+            - '  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;'
+            - '  proxy_set_header X-Forwarded-Host $host;'
+            - '  proxy_set_header X-Forwarded-Server $host;'
+            - '  proxy_set_header X-Real-IP $remote_addr;'
+            - '  proxy_set_header X-Scheme $scheme;'
+            - '  proxy_pass https://backend_{{ opensearch_ngx_domain }};'
+            - '}'
+          backend_address: '{{ opensearch_servers }}'
+          backend_port: '{{ opensearch_port.kibana }}'
+          sticky: 'ip_hash'
+          keepalive: '{{ ansible_processor_vcpus * 4 }}'
+    when: opensearch_ngx_dept | bool

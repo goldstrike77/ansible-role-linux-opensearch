@@ -1,2 +1,44 @@
 ---
-# tasks file for ansible-role-linux-opensearch
+- name: Include firewall tasks.
+  include: 'firewall.yml'
+
+- name: Include tasks for specific OS.
+  include: '{{ ansible_os_family }}.yml'
+
+- name: Include Configureation operation.
+  include: 'configureation.yml'
+
+- name: Include certificate tasks.
+  include: 'certificates.yml'
+
+- name: Check if ElasticSearch data exists.
+  stat:
+    path: '{{ opensearch_path }}/elasticsearch/nodes'
+  register: opensearch_es_result
+
+- name: Include configuration tasks.
+  include: 'opensearch.yml'
+  when: not opensearch_es_result.stat.exists
+
+- name: Include Kibana tasks.
+  include: 'kibana.yml'
+
+- name: Force the handler to run immediately.
+  meta: flush_handlers
+
+- name: Include ElasticSearch exporter tasks.
+  include: 'exporter.yml'
+  when: exporter_is_install | bool
+
+- name: Registered with HashiCorp Consul.
+  include: 'register.yml'
+  when:
+    - exporter_is_install | bool
+    - consul_public_register | bool
+
+- name: Include Index State Management tasks.
+  include: 'ISM.yml'
+  when: opensearch_servers[0] in ansible_default_ipv4.address
+
+- name: Include LogStash operation.
+  include: 'logstash.yml'

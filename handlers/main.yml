@@ -1,2 +1,42 @@
 ---
-# handlers file for ansible-role-linux-opensearch
+- name: Restart ElasticSearch service.
+  systemd:
+    name: 'elasticsearch.service'
+    enabled: 'yes'
+    state: 'restarted'
+    daemon_reload: 'yes'
+
+- name: Restart Kibana service.
+  systemd:
+    name: 'kibana.service'
+    enabled: 'yes'
+    state: 'restarted'
+    daemon_reload: 'yes'
+
+- name: Restart Kibana exporter service.
+  systemd:
+    name: 'kibana_exporter.service'
+    enabled: 'yes'
+    state: 'restarted'
+    daemon_reload: 'yes'
+
+- name: Restart LogStash service.
+  systemd:
+    name: 'logstash.service'
+    enabled: 'yes'
+    state: 'restarted'
+    daemon_reload: 'yes'
+
+- name: Restart ElasticSearch exporter service.
+  systemd:
+    name: 'elasticsearch_exporter.service'
+    enabled: 'yes'
+    state: 'restarted'
+    daemon_reload: 'yes'
+
+- name: Restart LogStash exporter service.
+  systemd:
+    name: 'logstash_exporter.service'
+    enabled: 'yes'
+    state: 'restarted'
+    daemon_reload: 'yes'

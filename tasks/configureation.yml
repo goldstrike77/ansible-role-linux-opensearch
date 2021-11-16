@@ -1,0 +1,21 @@
+---
+- name: Creating ElasticSearch & LogStash storage folder.
+  file:
+    dest: '{{ opensearch_path }}/{{ item }}'
+    state: 'directory'
+    owner: '{{ item }}'
+    group: '{{ item }}'
+    mode: '0750'
+  loop:
+    - 'elasticsearch'
+    - 'logstash'
+
+- name: Configure kernel parameters.
+  sysctl:
+    name: '{{ item.variable }}'
+    value: '{{ item.value }}'
+    state: 'present'
+    reload: 'yes'
+    sysctl_set: 'yes'
+    sysctl_file: '/etc/sysctl.d/20-sysctl.conf'
+  loop: '{{ opensearch_kernel_parameters }}'

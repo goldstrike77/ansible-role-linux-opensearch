@@ -1,0 +1,35 @@
+---
+- name: Include OS-specific variables.
+  include_vars: '{{ ansible_os_family }}.yml'
+
+- name: Add Open Distro YUM repositories.
+  yum_repository:
+    name: '{{ item.name }}'
+    description: '{{ item.desc }}'
+    file: 'opensearch'
+    baseurl: '{{ item.url }}'
+    gpgcheck: 'no'
+    timeout: '60'
+  loop: '{{ opensearch_repo }}'
+
+- name: Install the Open Distro packages.
+  package: 
+    name: '{{ opensearch_packages }}'
+    state: 'present'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 5
+  delay: 2
+  notify:
+    - Restart ElasticSearch service.
+
+- name: Add ElasticSearch exporter YUM repositories.
+  yum_repository:
+    name: '{{ opensearch_exporter_repo_name }}'
+    description: '{{ opensearch_exporter_repo_name }} YUM repository'
+    file: '{{ opensearch_exporter_repo_name }}'
+    baseurl: '{{ opensearch_exporter_repo_url }}'
+    gpgcheck: 'no'
+    timeout: '60'

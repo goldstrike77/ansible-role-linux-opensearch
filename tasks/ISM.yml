@@ -1,0 +1,44 @@
+---
+- name: Check index state management policies if exists.
+  uri:
+    url: 'https://{{ ansible_default_ipv4.address }}:{{ opensearch_port.rest }}/_opensearch/_ism/policies/default'
+    method: 'GET'
+    timeout: '10'
+    user: 'admin'
+    password: '{{ opensearch_admin_pass }}'
+    force_basic_auth: 'yes'
+    headers:
+      X-Requested-By: '{{ ansible_default_ipv4.address }}'
+      cache-control: 'no-cache'
+    validate_certs: 'no'
+    status_code: '200,404,-1'
+  environment:
+    no_proxy: '{{ ansible_default_ipv4.address }}'
+  changed_when: false
+  failed_when: false
+  register: opensearch_check_ism
+
+- name: Create index state management policies.
+  uri:
+    url: 'https://{{ ansible_default_ipv4.address }}:{{ opensearch_port.rest }}/_opensearch/_ism/policies/default'
+    method: 'PUT'
+    user: 'admin'
+    password: '{{ opensearch_admin_pass }}'
+    validate_certs: 'no'
+    body: '{"policy":{"description":"A default policy.","default_state":"hot","states":[{"name":"hot","actions":[{"replica_count":{"number_of_replicas":{% if opensearch_servers | length > 1 %}1{% else %}0{% endif %}}}],"transitions":[{"state_name":"cold","conditions":{"min_index_age":"2d"}}]},{"name":"cold","actions":[{"read_only":{}}],"transitions":[{"state_name":"delete","conditions":{"min_index_age":"{{ opensearch_rotate_day }}d"}}]},{"name":"delete","actions":[{"delete":{}}]}],"ism_template":{"index_patterns":["logstash-*","*beat*"],"priority":100}}}'
+    body_format: 'json'
+    status_code: '201,-1'
+    force_basic_auth: 'yes'
+    headers:
+      X-Requested-By: '{{ ansible_default_ipv4.address }}'
+      cache-control: 'no-cache'
+  environment:
+    no_proxy: '{{ ansible_default_ipv4.address }}'
+  when: opensearch_check_ism.status == 404
+  register: opensearch_create_ism
+  until: opensearch_create_ism.status == 201
+  retries: 5
+  delay: 2
+  changed_when: false
+  failed_when: false
+  no_log: true
