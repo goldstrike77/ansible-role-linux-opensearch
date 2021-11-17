@@ -1,39 +1,40 @@
 ---
 # General parameters #
-opensearch_is_install: false # A boolean to determine whether or not to install the Open Distro for ElasticSearch.
-opensearch_version: '1.13.1' # Specify the Open Distro for ElasticSearch version.
-opensearch_logstash_version: '7.10.2' # Specify the Logstash version.
-opensearch_path: '/data' # Specify the Open Distro for ElasticSearch storage directory.
-opensearch_cluster: 'siem' # Specify name for your ElasticSearch cluster.
-opensearch_admin_pass: 'changeme' # The password for administrator.
-opensearch_rotate_day: '180' # Specify the logs retention days.
-opensearch_es_heap_size: '3g' # Specify the maximum memory allocation pool for a Java virtual machine on ElasticSearch.
-opensearch_logstash_heap_size: '1g' # Specify the maximum memory allocation pool for a Java virtual machine on LogStash.
-opensearch_memory_lock: false # A boolean to determine whether or not lock the process address space into memory on startup.
-opensearch_kibana_proxy: false # A boolean to determine whether or not to mount Kibana at if you are running behind a proxy.
+os_is_install: false # A boolean to determine whether or not to install the Opensearch.
+os_version: '1.1.0' # Specify the Opensearch version.
+os_logstash_version: '7.13.2' # Specify the Logstash version.
+os_data_path: '/data' # Specify the Opensearch storage directory.
+os_soft_path: '/usr/share'
+os_cluster: 'siem' # Specify name for your Opensearch cluster.
+os_admin_pass: 'changeme' # The password for administrator.
+os_rotate_day: '180' # Specify the logs retention days.
+os_heap_size: '3g' # Specify the maximum memory allocation pool for a Java virtual machine on Opensearch.
+os_logstash_heap_size: '2g' # Specify the maximum memory allocation pool for a Java virtual machine on LogStash.
+os_memory_lock: false # A boolean to determine whether or not lock the process address space into memory on startup.
+os_dashboards_proxy: false # A boolean to determine whether or not to mount Kibana at if you are running behind a proxy.
 
 # Role dependencies #
-opensearch_ngx_dept: true # A boolean to determine whether or not to proxy web interface and API traffic using NGinx.
+os_ngx_dept: true # A boolean to determine whether or not to proxy web interface and API traffic using NGinx.
 
 # Listen port #
-opensearch_port:
-  rest: '9200' # TCP port for ElasticSearch REST.
-  transport: '9300' # TCP port for ElasticSearch transport port ragne.
-  elasticsearch_exporter: '9108' # TCP port for Prometheus Exporter.
-  kibana: '5601' # TCP port for Kibana server.
-  kibana_exporter: '9684' # TCP port for Kibana exporter.
+os_port:
+  rest: '9200' # TCP port for Opensearch REST.
+  transport: '9300' # TCP port for Opensearch transport port ragne.
+  exporter: '9108' # TCP port for Prometheus Exporter.
+  dashboards: '5601' # TCP port for Kibana server.
+  dashboards_exporter: '9684' # TCP port for Kibana exporter.
   analyzer_web: '9601' # TCP port for performance analyzer WebService exposed.
   analyzer_rpc: '9650' # TCP port for performance analyzer RPC Communication.
   logstash_exporter: '9198' # TCP Port for Logstash exporter.
   logstash_api: '9600' # TCP Port for the Logstash metrics REST endpoint.
 
 # Logstash parameters #
-opensearch_logstash_arg:
+os_logstash_arg:
   index_refresh_interval: '30s' # How often to perform a index refresh operation.
   pipeline_workers: '{% if ansible_processor_vcpus > 2 %}{{ (ansible_processor_vcpus / 2) | int }}{% else %}1{% endif %}' # The number of workers.
   pipeline_batch_size: '{{ ansible_processor_vcpus * 250 }}' # How many events to retrieve from inputs before sending to workers.
   pipeline_batch_delay: '100' # How long to wait in milliseconds while polling for the next event.
-opensearch_logstash_inputs_arg: # Define the global common inputs parameters.
+os_logstash_inputs_arg: # Define the global common inputs parameters.
 #  - name: 'cisco-asa'
 #    protocol: 'udp'
 #    port: '10514'
@@ -55,12 +56,13 @@ opensearch_logstash_inputs_arg: # Define the global common inputs parameters.
 #    sa_container: 'xxxxx'
 
 # NGinx parameters #
-opensearch_ngx_domain: 'siem.example.com' # Defines domain name.
-opensearch_ngx_port_http: '80' # Defines NGinx HTTP listen port.
-opensearch_ngx_port_https: '443' # Defines NGinx HTTPs listen port.
+os_ngx_domain: 'siem.example.com' # Defines domain name.
+os_ngx_port_http: '80' # Defines NGinx HTTP listen port.
+os_ngx_port_https: '443' # Defines NGinx HTTPs listen port.
 
-# ElasticSearch parameters #
-opensearch_es_arg:
+# Opensearch parameters #
+os_arg:
+  user: 'opensearch' # Jenkins running user.
   action_destructive_requires_name: true # Restricts deletions to specific names, instead of allowing the special _all or wildcard options.
   cluster_max_shards_per_node: '10000' # Controls the number of shards allowed in the cluster per data node.
   http_compression: true # A boolean to determine whether or not to compression when possible with Accept-Encoding.

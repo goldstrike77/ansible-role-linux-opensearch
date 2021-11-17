@@ -1,0 +1,68 @@
+cluster.name: {{ os_cluster | upper }}
+node.name: {{ ansible_hostname | lower }}
+path.data: {{ os_data_path }}/opensearch
+path.logs: /var/log/opensearch
+bootstrap.memory_lock: {{ os_memory_lock | bool | to_json }}
+network.host: {{ ansible_default_ipv4.address }} 
+http.port: {{ os_port.rest }}
+discovery.seed_hosts: ['{{ os_servers | list | join(":" + os_port.transport + "', '") }}:{{ os_port.transport }}']
+cluster.initial_master_nodes: ['{{ os_servers | list | join(":" + os_port.transport + "', '") }}:{{ os_port.transport }}']
+cluster.max_shards_per_node: {{ os_arg.cluster_max_shards_per_node | default('1000') }}
+action.destructive_requires_name: {{ os_arg.action_destructive_requires_name | bool | to_json }}
+http.compression: {{ os_arg.http_compression | bool | to_json }}
+http.cors.enabled: {{ os_arg.http_cors_enabled | bool | to_json }}
+http.cors.allow-methods: {{ os_arg.http_cors_allow_methods }}
+plugins.security.ssl.transport.pemcert_filepath: {{ os_soft_path }}/opensearch/config/ssl/server.crt
+plugins.security.ssl.transport.pemkey_filepath: {{ os_soft_path }}/opensearch/config/ssl/server.key
+plugins.security.ssl.transport.pemtrustedcas_filepath: {{ os_soft_path }}/opensearch/config/ssl/ca-cert.pem
+plugins.security.ssl.transport.enforce_hostname_verification: false
+plugins.security.ssl.transport.resolve_hostname: false
+plugins.security.ssl.transport.enabled_protocols:
+  - "TLSv1.2"
+plugins.security.ssl.transport.enabled_ciphers:
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256" 
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA"
+plugins.security.ssl.http.enabled: true
+plugins.security.ssl.http.clientauth_mode: NONE
+plugins.security.ssl.http.enabled_protocols:
+  - "TLSv1.2"
+plugins.security.ssl.http.enabled_ciphers:
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_128_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384"
+  - "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA"
+  - "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA256"
+  - "TLS_RSA_WITH_AES_256_CBC_SHA"
+plugins.security.ssl.http.pemcert_filepath: {{ os_soft_path }}/opensearch/config/ssl/server.crt
+plugins.security.ssl.http.pemkey_filepath: {{ os_soft_path }}/opensearch/config/ssl/server.key
+plugins.security.ssl.http.pemtrustedcas_filepath: {{ os_soft_path }}/opensearch/config/ssl/ca-cert.pem
+plugins.security.allow_unsafe_democertificates: true
+plugins.security.allow_default_init_securityindex: true
+plugins.security.authcz.admin_dn:
+  - CN={{ os_cluster| upper }}
+plugins.security.nodes_dn:
+  - CN={{ os_cluster| upper }}
+plugins.security.audit.type: internal_opensearch
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+plugins.security.system_indices.enabled: true
+plugins.security.system_indices.indices: [".opendistro-alerting-config*", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opendistro-asynchronous-search-response*"]
+cluster.routing.allocation.disk.threshold_enabled: false
+node.max_local_storage_nodes: {{ os_servers | length | int }} 

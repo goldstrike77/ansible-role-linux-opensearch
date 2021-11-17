@@ -1,0 +1,9 @@
+---
+- name: Include configuration tasks.
+  include: 'config/{{ components_item }}.yml'
+  loop:
+    - 'opensearch'
+    - 'dashboards'
+#    - 'logstash'
+  loop_control:
+    loop_var: components_item

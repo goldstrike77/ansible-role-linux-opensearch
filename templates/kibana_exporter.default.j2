@@ -1,1 +1,0 @@
-KIBANA_EXPORTER_OPTS='-kibana.uri https://{{ ansible_default_ipv4.address }}:{{ opensearch_port.kibana }}{% if opensearch_kibana_proxy | bool %}/kibana{% endif %} -web.listen-address {{ ansible_default_ipv4.address }}:{{ opensearch_port.kibana_exporter }} -kibana.skip-tls'

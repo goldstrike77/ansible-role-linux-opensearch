@@ -1,7 +1,7 @@
 ---
 - name: Install the ElasticSearch exporter packages.
   package:
-    name: '{{ opensearch_exporter_packages }}'
+    name: '{{ os_exporter_packages }}'
     state: 'present'
     validate_certs: 'no'
     disable_gpg_check: 'yes'
@@ -12,7 +12,7 @@
 
 - name: ElasticSearch exporter configure file transfer.
   template:
-    src: 'elasticsearch_exporter.default.j2'
+    src: 'elasticsearch_exporter.default'
     dest: '/etc/default/elasticsearch_exporter'
     owner: 'prometheus'
     group: 'prometheus'
@@ -23,22 +23,22 @@
   unarchive:
     src: 'logstash_exporter.tar.xz'
     dest: '/usr/local/bin'
-    owner: 'logstash'
-    group: 'logstash'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
     mode: '0755'
   notify: Restart LogStash exporter service.
 
 - name: LogStash exporter configure file transfer.
   template:
-    src: 'logstash_exporter.j2'
+    src: 'logstash_exporter'
     dest: '/etc/default/logstash_exporter'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    mode: '0640'
   notify: Restart LogStash exporter service.
 
 - name: LogStash service file transfer.
-  copy:
+  template:
     src: 'logstash_exporter.service'
     dest: '/lib/systemd/system'
     owner: 'root'
@@ -50,22 +50,22 @@
   unarchive:
     src: 'kibana_exporter.tar.xz'
     dest: '/usr/local/bin'
-    owner: 'kibana'
-    group: 'kibana'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
     mode: '0755'
   notify: Restart Kibana exporter service.
 
 - name: Kibana exporter configure file transfer.
   template:
-    src: 'kibana_exporter.default.j2'
+    src: 'kibana_exporter.default'
     dest: '/etc/default/kibana_exporter'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    mode: '0640'
   notify: Restart Kibana exporter service.
 
 - name: Kibana service file transfer.
-  copy:
+  template:
     src: 'kibana_exporter.service'
     dest: '/lib/systemd/system'
     owner: 'root'

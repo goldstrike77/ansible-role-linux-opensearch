@@ -1,0 +1,1 @@
+LOGSTASH_EXPORTER_OPTS='--logstash.endpoint="http://{{ ansible_default_ipv4.address }}:{{ os_port.logstash_api }}" --log.format="logger:syslog?appname=logstash_exporter&local=7" --web.listen-address="{{ ansible_default_ipv4.address }}:{{ os_port.logstash_exporter }}"'

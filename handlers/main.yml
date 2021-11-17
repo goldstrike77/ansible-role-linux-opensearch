@@ -1,14 +1,14 @@
 ---
-- name: Restart ElasticSearch service.
+- name: Restart Opensearch service.
   systemd:
-    name: 'elasticsearch.service'
+    name: 'opensearch.service'
     enabled: 'yes'
     state: 'restarted'
     daemon_reload: 'yes'
 
-- name: Restart Kibana service.
+- name: Restart Dashboards service.
   systemd:
-    name: 'kibana.service'
+    name: 'dashboards.service'
     enabled: 'yes'
     state: 'restarted'
     daemon_reload: 'yes'

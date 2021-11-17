@@ -7,7 +7,7 @@ After=network.target
 
 [Service]
 EnvironmentFile=-/etc/default/kibana_exporter
-User=kibana
+User={{ os_arg.user }}
 LimitNOFILE=4096
 LimitNPROC=4096
 ExecStart=/usr/local/bin/kibana_exporter $KIBANA_EXPORTER_OPTS

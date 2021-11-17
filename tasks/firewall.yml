@@ -12,7 +12,7 @@
         permanent: 'true'
         immediate: 'true'
         state: 'enabled'
-      loop: '{{ opensearch_port | dict2items }}'
+      loop: '{{ os_port | dict2items }}'
     - name: Allow Logstash inputs TCP ports.
       firewalld:
         port: "{{ item.port }}/tcp"
@@ -20,7 +20,7 @@
         permanent: 'true'
         immediate: 'true'
         state: 'enabled'
-      loop: '{{ opensearch_logstash_inputs_arg }}'
+      loop: '{{ os_logstash_inputs_arg }}'
     - name: Allow Logstash inputs UDP ports.
       firewalld:
         port: "{{ item.port }}/udp"
@@ -28,7 +28,7 @@
         permanent: 'true'
         immediate: 'true'
         state: 'enabled'
-      loop: '{{ opensearch_logstash_inputs_arg }}'
+      loop: '{{ os_logstash_inputs_arg }}'
   when:
     - services_state.ansible_facts.services["firewalld.service"] is defined
     - services_state.ansible_facts.services["firewalld.service"].state == 'running'

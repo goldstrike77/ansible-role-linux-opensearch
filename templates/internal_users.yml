@@ -11,19 +11,19 @@ _meta:
 ## Demo users
 
 admin:
-  hash: "{{ opensearch_admin_pass | password_hash('bcrypt') }}"
+  hash: "{{ os_admin_pass | password_hash('bcrypt') }}"
   reserved: true
   backend_roles:
   - "admin"
   description: "Demo admin user"
 
 kibanaserver:
-  hash: "{{ opensearch_kibanaserver_pass | password_hash('bcrypt') }}"
+  hash: "{{ os_kibanaserver_pass | password_hash('bcrypt') }}"
   reserved: true
   description: "Demo kibanaserver user"
 
 kibanaro:
-  hash: "{{ opensearch_kibanaro_pass | password_hash('bcrypt') }}" 
+  hash: "{{ os_kibanaro_pass | password_hash('bcrypt') }}" 
   reserved: false
   backend_roles:
   - "kibanauser"
@@ -35,21 +35,21 @@ kibanaro:
   description: "Demo kibanaro user"
 
 logstash:
-  hash: "{{ opensearch_logstash_pass | password_hash('bcrypt') }}"
+  hash: "{{ os_logstash_pass | password_hash('bcrypt') }}"
   reserved: false
   backend_roles:
   - "logstash"
   description: "Demo logstash user"
 
 readall:
-  hash: "{{ opensearch_readall_pass | password_hash('bcrypt') }}"
+  hash: "{{ os_readall_pass | password_hash('bcrypt') }}"
   reserved: false
   backend_roles:
   - "readall"
   description: "Demo readall user"
 
 snapshotrestore:
-  hash: "{{ opensearch_snapshotrestore_pass | password_hash('bcrypt') }}"
+  hash: "{{ os_snapshotrestore_pass | password_hash('bcrypt') }}"
   reserved: false
   backend_roles:
   - "snapshotrestore"

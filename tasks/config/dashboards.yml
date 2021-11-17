@@ -1,0 +1,10 @@
+---
+- name: Opensearch dashboards configuration file transfer.
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.owner }}'
+    mode: '{{ item.mode }}'
+  loop: '{{ os_dashboards_conf }}'
+  notify: Restart Dashboards service.

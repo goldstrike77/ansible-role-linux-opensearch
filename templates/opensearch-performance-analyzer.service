@@ -1,0 +1,15 @@
+[Unit]
+Description=Opensearch for Elasticsearch Performance Analyzer
+PartOf=opensearch.service
+
+[Service]
+ExecStart={{ os_soft_path }}/opensearch/bin/performance-analyzer-agent-cli
+Restart=on-failure
+User={{ os_arg.user }}
+Group={{ os_arg.user }}
+Environment=OPENSEARCH_HOME={{ os_soft_path }}/opensearch
+WorkingDirectory={{ os_soft_path }}/opensearch
+StandardOutput=null
+
+[Install]
+WantedBy=opensearch.service

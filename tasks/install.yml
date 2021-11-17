@@ -1,0 +1,62 @@
+---
+- name: Add the group opensearch.
+  group:
+    name: '{{ os_arg.user }}'
+
+- name: Add the user opensearch.
+  user:
+    name: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    create_home: false
+    shell: '/bin/false'
+
+- name: Creating binary folder.
+  file:
+    dest: '{{ os_soft_path }}/{{ item }}'
+    state: 'directory'
+    owner: '{{ os_arg.user }}'
+    mode: '755'
+  loop:
+    - 'opensearch'
+    - 'opensearch-dashboards'
+    - 'logstash'
+
+- name: Creating storage folder.
+  file:
+    dest: '{{ os_data_path }}/{{ item }}'
+    state: 'directory'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    mode: '0750'
+  loop:
+    - 'opensearch'
+    - 'logstash'
+
+- name: Creating storage folder.
+  file:
+    dest: '/var/log/{{ item }}'
+    state: 'directory'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    mode: '0750'
+  loop:
+    - 'opensearch'
+    - 'opensearch-dashboards'
+    - 'logstash'
+
+- name: Configure kernel parameters.
+  sysctl:
+    name: '{{ item.variable }}'
+    value: '{{ item.value }}'
+    state: 'present'
+    reload: 'yes'
+    sysctl_set: 'yes'
+    sysctl_file: '/etc/sysctl.d/20-sysctl.conf'
+  loop: '{{ os_kernel_parameters }}'
+
+- name: Include installation tasks.
+  include: 'install/{{ item }}.yml'
+  loop:
+    - 'opensearch'
+    - 'dashboards'
+    - 'logstash'

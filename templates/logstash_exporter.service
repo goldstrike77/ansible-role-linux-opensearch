@@ -7,7 +7,7 @@ After=network.target
 
 [Service]
 EnvironmentFile=-/etc/default/logstash_exporter
-User=logstash
+User={{ os_arg.user }}
 LimitNOFILE=4096
 LimitNPROC=4096
 ExecStart=/usr/local/bin/logstash_exporter $LOGSTASH_EXPORTER_OPTS

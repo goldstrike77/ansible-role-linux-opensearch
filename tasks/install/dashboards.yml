@@ -1,0 +1,21 @@
+- name: Check current Opensearch dashboards version.
+  command: 'grep {{ os_version }} {{ os_soft_path }}/opensearch-dashboards/package.json'
+  register: os_dashboards_current_version
+  changed_when: false
+  failed_when: false
+
+- name: Install Opensearch dashboards components.
+  unarchive:
+    src: '{{ os_soft_url }}/releases/bundle/opensearch-dashboards/{{ os_version }}/opensearch-dashboards-{{ os_version }}-linux-x64.tar.gz'
+    dest: '{{ os_soft_path }}/opensearch-dashboards'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    extra_opts: [--strip-components=1]
+    remote_src: 'yes'
+    validate_certs: 'no'
+  register: os_dashboards_update
+  until: os_dashboards_update is succeeded
+  retries: 5
+  delay: 2
+  when: os_dashboards_current_version.rc == 2 or os_version not in os_dashboards_current_version.stdout
+  notify: Restart Dashboards service.

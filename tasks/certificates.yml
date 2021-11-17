@@ -1,66 +1,69 @@
 ---
 - name: Check private key exists.
   stat:
-    path: '/etc/elasticsearch/ssl/server.key'
+    path: '{{ os_soft_path }}/opensearch/config/ssl/server.key'
   register: check_cert_keys
 
 - name: Certificate Signing operation.
   block:
     - name: Install requirement python package.
       pip:
-        name: '{{ opensearch_python_dependent_packages }}'
-        state: 'forcereinstall'
-        extra_args: '--default-timeout=120 -i https://{{ opensearch_pypi_url }}/pypi/simple/ --trusted-host {{ opensearch_pypi_url }}'
-      register: opensearch_python_status
-      until: opensearch_python_status is succeeded
+        name: '{{ item }}'
+        state: 'present'
+        extra_args: '--default-timeout=120 -i https://{{ os_pypi_url }}/pypi/simple/ --trusted-host {{ os_pypi_url }}'
+      loop: '{{ os_python_dependent_packages }}'
+      register: os_python_status
+      until: os_python_status is succeeded
       retries: 5
       delay: 2
     - name: Selfsigned CA file transfer.
       synchronize:
         src: 'files/ssl'
-        dest: '/etc/{{ item }}'
+        dest: '{{ os_soft_path }}/{{ item }}/config'
         owner: false
         group: false
         mode: 'push'
       loop:
-        - 'elasticsearch'
-        - 'kibana'
+        - 'opensearch'
+        - 'opensearch-dashboards'
     - name: "Generate an OpenSSL private key with PKCS #8 format."
-      shell: 'openssl genpkey -out /etc/{{ item }}/ssl/server.key -algorithm RSA -pkeyopt rsa_keygen_bits:4096'
+      shell: 'openssl genpkey -out {{ os_soft_path }}/{{ item }}/config/ssl/server.key -algorithm RSA -pkeyopt rsa_keygen_bits:4096'
       loop:
-        - 'elasticsearch'
-        - 'kibana'
+        - 'opensearch'
+        - 'opensearch-dashboards'
     - name: Generate an OpenSSL Certificate Signing Request.
       openssl_csr:
-        path: '/etc/{{ item }}/ssl/server.csr'
-        privatekey_path: '/etc/{{ item }}/ssl/server.key'
+        path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.csr'
+        privatekey_path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.key'
         select_crypto_backend: 'cryptography'
-        common_name: '{{ opensearch_cluster| upper }}'
+        common_name: '{{ os_cluster| upper }}'
         subject_alt_name:
           - 'DNS:{{ ansible_hostname }}'
           - 'DNS:{{ ansible_fqdn }}'
           - 'DNS:{{ ansible_default_ipv4.address }}'
           - 'DNS:*.service.{{ datacenter }}.{{ domain }}'
           - 'IP:{{ ansible_default_ipv4.address }}'
-        owner: '{{ item }}'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
         mode: '640'
         state: 'present'
       loop:
-        - 'elasticsearch'
-        - 'kibana'
+        - 'opensearch'
+        - 'opensearch-dashboards'
     - name: Generate an OpenSSL certificate signed with your own CA certificate.
       openssl_certificate:
-        path: '/etc/{{ item }}/ssl/server.crt'
-        csr_path: '/etc/{{ item }}/ssl/server.csr'
-        ownca_path: '/etc/{{ item }}/ssl/ca-cert.pem'
-        ownca_privatekey_path: '/etc/{{ item }}/ssl/ca-key.pem'
+        path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.crt'
+        csr_path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.csr'
+        ownca_path: '{{ os_soft_path }}/{{ item }}/config/ssl/ca-cert.pem'
+        ownca_privatekey_path: '{{ os_soft_path }}/{{ item }}/config/ssl/ca-key.pem'
         select_crypto_backend: 'cryptography'
         ownca_not_after: '+7305d'
         provider: 'ownca'
-        owner: '{{ item }}'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
         mode: '640'
         state: 'present'
       loop:
-        - 'elasticsearch'
-        - 'kibana'
+        - 'opensearch'
+        - 'opensearch-dashboards'
   when: not check_cert_keys.stat.exists or check_cert_keys.stat.size == 0

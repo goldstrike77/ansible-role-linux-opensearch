@@ -1,9 +1,0 @@
----
-- name: Kibana configuration file transfer.
-  template:
-    src: 'kibana.yml.j2'
-    dest: '/etc/kibana/kibana.yml'
-    owner: 'kibana'
-    group: 'kibana'
-    mode: '640'
-  notify: Restart Kibana service.

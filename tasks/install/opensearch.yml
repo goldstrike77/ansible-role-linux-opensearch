@@ -1,0 +1,21 @@
+- name: Check current Opensearch version.
+  command: 'grep {{ os_version }} {{ os_soft_path }}/opensearch/manifest.yml'
+  register: os_current_version
+  changed_when: false
+  failed_when: false
+
+- name: Install Opensearch components.
+  unarchive:
+    src: '{{ os_soft_url }}/releases/bundle/opensearch/{{ os_version }}/opensearch-{{ os_version }}-linux-x64.tar.gz'
+    dest: '{{ os_soft_path }}/opensearch'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    extra_opts: [--strip-components=1]
+    remote_src: 'yes'
+    validate_certs: 'no'
+  register: os_update
+  until: os_update is succeeded
+  retries: 5
+  delay: 2
+  when: os_current_version.rc == 2 or os_version not in os_current_version.stdout
+  notify: Restart Opensearch service.

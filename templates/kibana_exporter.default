@@ -1,0 +1,1 @@
+KIBANA_EXPORTER_OPTS='-kibana.uri https://{{ ansible_default_ipv4.address }}:{{ os_port.dashboards }}{% if os_dashboards_proxy | bool %}/dashboards{% endif %} -web.listen-address {{ ansible_default_ipv4.address }}:{{ os_port.dashboards_exporter }} -kibana.skip-tls'

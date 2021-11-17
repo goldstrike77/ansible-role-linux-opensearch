@@ -1,0 +1,6 @@
+# user : password
+kibanaserver : {{ os_kibanaserver_pass }}
+kibanaro : {{ os_kibanaro_pass }}
+logstash : {{ os_logstash_pass }}
+readall : {{ os_readall_pass }}
+snapshotrestore : {{ os_snapshotrestore_pass }}

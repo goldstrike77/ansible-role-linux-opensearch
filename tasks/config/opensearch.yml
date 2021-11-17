@@ -1,0 +1,27 @@
+---
+- name: Check if Opensearch data exists.
+  stat:
+    path: '{{ os_data_path }}/opensearch/nodes'
+  register: os_data_result
+
+- name: Opensearch configuration file transfer.
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.owner }}'
+    mode: '{{ item.mode }}'
+  loop: '{{ os_conf }}'
+  notify: Restart Opensearch service.
+  when: not os_data_result.stat.exists
+
+- name: Opensearch internal users password outputs.
+  template:
+    src: 'os_internal_users.passwd'
+    dest: '/tmp/os_internal_users.passwd'
+    mode: '0600'
+    owner: 'root'
+    group: 'root'
+  when: os_servers[0] in ansible_default_ipv4.address
+  no_log: true
+  when: not os_data_result.stat.exists

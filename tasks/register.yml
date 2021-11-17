@@ -11,11 +11,11 @@
   failed_when: false
   register: check_consul_local
 
-- name: Register ElasticSearch service with an health check.
+- name: Register Opensearch service with an health check.
   uri:
     url: '{{ consul_public_http_prot }}://{{ ansible_default_ipv4.address }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'PUT'
-    body: '{"tags":["elasticsearch"],"ID":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-elasticsearch","name":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-elasticsearch","address":"{{ ansible_default_ipv4.address }}","port":{{ opensearch_port.rest }},"checks":[{"tcp":"{{ ansible_default_ipv4.address }}:{{ opensearch_port.rest }}","interval":"10s","timeout":"10s"}]}'
+    body: '{"tags":["opensearch"],"ID":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-opensearch","name":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-opensearch","address":"{{ ansible_default_ipv4.address }}","port":{{ os_port.rest }},"checks":[{"tcp":"{{ ansible_default_ipv4.address }}:{{ os_port.rest }}","interval":"10s","timeout":"10s"}]}'
     body_format: 'json'
     status_code: '200'
     headers:
@@ -34,11 +34,11 @@
   changed_when: false
   failed_when: false
 
-- name: Register Kibana service with an health check.
+- name: Register Dashboards service with an health check.
   uri:
     url: '{{ consul_public_http_prot }}://{{ ansible_default_ipv4.address }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'PUT'
-    body: '{"tags":["kibana"],"ID":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-kibana","name":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-kibana","address":"{{ ansible_default_ipv4.address }}","port":{{ opensearch_port.kibana }},"checks":[{"tcp":"{{ ansible_default_ipv4.address }}:{{ opensearch_port.kibana }}","interval":"10s","timeout":"10s"}]}'
+    body: '{"tags":["dashboards"],"ID":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-dashboards","name":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-dashboards","address":"{{ ansible_default_ipv4.address }}","port":{{ os_port.dashboards }},"checks":[{"tcp":"{{ ansible_default_ipv4.address }}:{{ os_port.dashboards }}","interval":"10s","timeout":"10s"}]}'
     body_format: 'json'
     status_code: '200'
     headers:
@@ -61,7 +61,7 @@
   uri:
     url: '{{ consul_public_http_prot }}://{{ ansible_default_ipv4.address }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'PUT'
-    body: '{"tags":["logstash"],"ID":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-logstash","name":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-logstash","address":"{{ ansible_default_ipv4.address }}","checks":[{"http":"http://127.0.0.1:{{ opensearch_port.logstash_api }}/_node","interval":"10s","tls_skip_verify":true,"method":"HEAD","timeout":"10s"}]}'
+    body: '{"tags":["logstash"],"ID":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-logstash","name":"{{ customer | lower | regex_replace("_", "-") }}-{{ environments | lower | regex_replace("_", "-") }}-{{ group_names[-1] | lower | regex_replace("_", "-") }}-{{ group_names[0] | lower | regex_replace("_", "-") }}-logstash","address":"{{ ansible_default_ipv4.address }}","checks":[{"http":"http://{{ ansible_default_ipv4.address }}:{{ os_port.logstash_api }}/_node","interval":"10s","tls_skip_verify":true,"method":"HEAD","timeout":"10s"}]}'
     body_format: 'json'
     status_code: '200'
     headers:
@@ -93,11 +93,11 @@
   failed_when: false
   register: check_consul_reg
 
-- name: Register ElasticSearch exporter.
+- name: Register Opensearch exporter.
   uri:
     url: '{{ consul_public_http_prot }}://{{ item.client }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'PUT'
-    body: '{"tags":["prometheus","exporter"],"ID":"{{ ansible_hostname | lower }}_elasticsearch_exporter","name":"elasticsearch_exporter","address":"{{ ansible_default_ipv4.address }}","port":{{ opensearch_port.elasticsearch_exporter }},"meta":{"application":"Search Engine","instance":"{{ ansible_hostname | lower }}","customer":"{{ customer | title | regex_replace("_", "-") }}","project":"{{ group_names[-1] | title | regex_replace("_", "-") }}","group":"{{ group_names[0] | title | regex_replace("_", "-") }}","environment":"{{ environments | lower }}","datacenter": "{{ datacenter | lower }}","domain":"{{ domain | lower }}","cluster":"{{ opensearch_cluster | upper }}"{% if tags is defined %},{{ tags | to_json | regex_replace("{") | regex_replace("}") }}{% endif %}}}'
+    body: '{"tags":["prometheus","exporter"],"ID":"{{ ansible_hostname | lower }}_opensearch_exporter","name":"opensearch_exporter","address":"{{ ansible_default_ipv4.address }}","port":{{ os_port.rest }},"meta":{"application":"Search Engine","instance":"{{ ansible_hostname | lower }}","customer":"{{ customer | title | regex_replace("_", "-") }}","project":"{{ group_names[-1] | title | regex_replace("_", "-") }}","group":"{{ group_names[0] | title | regex_replace("_", "-") }}","environment":"{{ environments | lower }}","datacenter": "{{ datacenter | lower }}","domain":"{{ domain | lower }}","cluster":"{{ os_cluster | upper }}"{% if tags is defined %},{{ tags | to_json | regex_replace("{") | regex_replace("}") }}{% endif %}}}'
     body_format: 'json'
     status_code: '200'
     headers:
@@ -121,7 +121,7 @@
   uri:
     url: '{{ consul_public_http_prot }}://{{ item.client }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'PUT'
-    body: '{"tags":["prometheus","exporter"],"ID":"{{ ansible_hostname | lower }}_logstash_exporter","name":"logstash_exporter","address":"{{ ansible_default_ipv4.address }}","port":{{ opensearch_port.logstash_exporter }},"meta":{"application":"Pipeline","metrics_path":"/metrics","instance":"{{ ansible_hostname | lower }}","customer":"{{ customer | title | regex_replace("_", "-") }}","project":"{{ group_names[-1] | title | regex_replace("_", "-") }}","group":"{{ group_names[0] | title | regex_replace("_", "-") }}","environment":"{{ environments | lower }}","datacenter": "{{ datacenter | lower }}","domain":"{{ domain | lower }}","cluster":"{{ opensearch_cluster | upper }}"{% if tags is defined %},{{ tags | to_json | regex_replace("{") | regex_replace("}") }}{% endif %}}}'
+    body: '{"tags":["prometheus","exporter"],"ID":"{{ ansible_hostname | lower }}_logstash_exporter","name":"logstash_exporter","address":"{{ ansible_default_ipv4.address }}","port":{{ os_port.logstash_exporter }},"meta":{"application":"Pipeline","metrics_path":"/metrics","instance":"{{ ansible_hostname | lower }}","customer":"{{ customer | title | regex_replace("_", "-") }}","project":"{{ group_names[-1] | title | regex_replace("_", "-") }}","group":"{{ group_names[0] | title | regex_replace("_", "-") }}","environment":"{{ environments | lower }}","datacenter": "{{ datacenter | lower }}","domain":"{{ domain | lower }}","cluster":"{{ os_cluster | upper }}"{% if tags is defined %},{{ tags | to_json | regex_replace("{") | regex_replace("}") }}{% endif %}}}'
     body_format: 'json'
     status_code: '200'
     headers:
@@ -141,11 +141,11 @@
   changed_when: false
   failed_when: false
 
-- name: Register Kibana exporter.
+- name: Register Dashboards exporter.
   uri:
     url: '{{ consul_public_http_prot }}://{{ item.client }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'PUT'
-    body: '{"tags":["prometheus","exporter"],"ID":"{{ ansible_hostname | lower }}_kibana_exporter","name":"kibana_exporter","address":"{{ ansible_default_ipv4.address }}","port":{{ opensearch_port.kibana_exporter }},"meta":{"application":"Visualization","metrics_path":"/metrics","instance":"{{ ansible_hostname | lower }}","customer":"{{ customer | title | regex_replace("_", "-") }}","project":"{{ group_names[-1] | title | regex_replace("_", "-") }}","group":"{{ group_names[0] | title | regex_replace("_", "-") }}","datacenter": "{{ datacenter | lower }}","domain":"{{ domain | lower }}","environment":"{{ environments | lower }}"{% if tags is defined %},{{ tags | to_json | regex_replace("{") | regex_replace("}") }}{% endif %}}}'
+    body: '{"tags":["prometheus","exporter"],"ID":"{{ ansible_hostname | lower }}_dashboards_exporter","name":"dashboards_exporter","address":"{{ ansible_default_ipv4.address }}","port":{{ os_port.dashboards_exporter }},"meta":{"application":"Visualization","metrics_path":"/metrics","instance":"{{ ansible_hostname | lower }}","customer":"{{ customer | title | regex_replace("_", "-") }}","project":"{{ group_names[-1] | title | regex_replace("_", "-") }}","group":"{{ group_names[0] | title | regex_replace("_", "-") }}","datacenter": "{{ datacenter | lower }}","domain":"{{ domain | lower }}","environment":"{{ environments | lower }}"{% if tags is defined %},{{ tags | to_json | regex_replace("{") | regex_replace("}") }}{% endif %}}}'
     body_format: 'json'
     status_code: '200'
     headers:
