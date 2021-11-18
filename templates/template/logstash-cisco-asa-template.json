@@ -1,12 +1,13 @@
 {
+  "order": {{ index + 200 }},
   "index_patterns": [
     "logstash-cisco-asa*"
   ],
-  "template": {
-    "settings": {
-      "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",
-      "number_of_shards": "{{ os_servers | length }}"
-    },
+  "settings": {
+    "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",
+    "number_of_shards": "{{ os_servers | length }}",
+    "number_of_replicas": "{% if os_servers | length > 1 %}1{% else %}0{% endif %}"
+  },
     "mappings": {
       "properties": {
         "@timestamp": {
@@ -200,5 +201,4 @@
         }
       }
     }
-  }
 }
