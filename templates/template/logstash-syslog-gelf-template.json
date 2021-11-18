@@ -1,0 +1,9 @@
+{
+  "index_patterns": [
+    "logstash-syslog-gelf*"
+  ],
+  "settings": {
+    "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",
+    "number_of_shards": "{{ os_servers | length }}"
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "index_patterns": [
-    "logstash-azure-nsg*"
-  ],
-  "settings": {
-    "refresh_interval": "{{ opensearch_logstash_arg.index_refresh_interval }}",
-    "number_of_shards": "{{ opensearch_servers | length }}"
-  }
-}

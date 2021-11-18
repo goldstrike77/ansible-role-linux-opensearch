@@ -4,6 +4,6 @@
   loop:
     - 'opensearch'
     - 'dashboards'
-#    - 'logstash'
+    - 'logstash'
   loop_control:
     loop_var: components_item

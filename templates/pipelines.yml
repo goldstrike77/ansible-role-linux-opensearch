@@ -1,0 +1,2 @@
+- pipeline.id: main
+  path.config: "{{ os_soft_path }}/logstash/config/conf.d/*.conf"

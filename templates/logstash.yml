@@ -1,0 +1,12 @@
+path.data: {{ os_data_path }}/logstash
+pipeline.workers: {{ os_logstash_arg.pipeline_workers }}
+pipeline.batch.size: {{ os_logstash_arg.pipeline_batch_size }}
+pipeline.batch.delay: {{ os_logstash_arg.pipeline_batch_delay }}
+pipeline.ordered: auto
+config.reload.automatic: false
+config.reload.interval: 3s
+http.enabled: true
+http.host: {{ ansible_default_ipv4.address }}
+http.port: {{ os_port.logstash_api }}
+log.level: info
+path.logs: /var/log/logstash

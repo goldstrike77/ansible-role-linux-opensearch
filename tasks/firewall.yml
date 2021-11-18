@@ -5,7 +5,7 @@
 
 - name: Firewall policy operation.
   block:
-    - name: Allow Open Distro service port.
+    - name: Allow Opensearch service port.
       firewalld:
         port: '{{ item.value }}/tcp'
         zone: 'public'

@@ -50,10 +50,6 @@ os_logstash_inputs_arg: # Define the global common inputs parameters.
 #  - name: 'nginx-json'
 #    protocol: 'syslog'
 #    port: '12301'
-#  - name: 'azure-nsg'
-#    sa_name: 'xxxxx'
-#    sa_access_key: 'xxxxx'
-#    sa_container: 'xxxxx'
 
 # NGinx parameters #
 os_ngx_domain: 'siem.example.com' # Defines domain name.

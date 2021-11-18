@@ -25,7 +25,7 @@ os_conf:
   - { src: 'opensearch.yml', dest: '{{ os_soft_path }}/opensearch/config/opensearch.yml', mode: '640', owner: '{{ os_arg.user }}' }
   - { src: 'opensearch.service', dest: '/lib/systemd/system/opensearch.service', mode: '644', owner: 'root' }
   - { src: 'opensearch-performance-analyzer.service', dest: '/lib/systemd/system/opensearch-performance-analyzer.service', mode: '644', owner: 'root' }
-  - { src: 'jvm.options.opensearch', dest: '{{ os_soft_path }}/opensearch/config/jvm.options', mode: '644', owner: '{{ os_arg.user }}' }
+  - { src: 'jvm.options.opensearch', dest: '{{ os_soft_path }}/opensearch/config/jvm.options', mode: '600', owner: '{{ os_arg.user }}' }
   - { src: 'internal_users.yml', dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml', mode: '644', owner: '{{ os_arg.user }}' }
   - { src: 'performance-analyzer.properties', dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-performance-analyzer/pa_config/performance-analyzer.properties', mode: '644', owner: '{{ os_arg.user }}' }
 
@@ -35,8 +35,10 @@ os_dashboards_conf:
   - { src: 'node.options', dest: '{{ os_soft_path }}/opensearch-dashboards/config/node.options', mode: '644', owner: '{{ os_arg.user }}' }
 
 os_logstash_conf:
-  - { src: 'jvm.options.logstash', dest: '/etc/logstash/jvm.options', mode: '644', owner: 'root' }
-  - { src: 'logstash.yml', dest: '/etc/logstash/logstash.yml', mode: '644', owner: 'root' }
+  - { src: 'jvm.options.logstash', dest: '{{ os_soft_path }}/logstash/config/jvm.options', mode: '640', owner: '{{ os_arg.user }}' }
+  - { src: 'logstash.yml', dest: '{{ os_soft_path }}/logstash/config/logstash.yml', mode: '640', owner: '{{ os_arg.user }}' }
+  - { src: 'pipelines.yml', dest: '{{ os_soft_path }}/logstash/config/pipelines.yml', mode: '640', owner: '{{ os_arg.user }}' }
+  - { src: 'logstash.service', dest: '/lib/systemd/system/logstash.service', mode: '644', owner: 'root' }
 
 os_exporter_collector:
 #  - 'es.all'

@@ -3,8 +3,8 @@
 # Xms represents the initial size of total heap space
 # Xmx represents the maximum size of total heap space
 
--Xms{{ opensearch_logstash_heap_size | default('1g') }}
--Xmx{{ opensearch_logstash_heap_size | default('1g') }}
+-Xms{{ os_logstash_heap_size | default('1g') }}
+-Xmx{{ os_logstash_heap_size | default('1g') }}
 
 ################################################################
 ## Expert settings
@@ -17,9 +17,9 @@
 ################################################################
 
 ## GC configuration
--XX:+UseConcMarkSweepGC
--XX:CMSInitiatingOccupancyFraction=75
--XX:+UseCMSInitiatingOccupancyOnly
+8-13:-XX:+UseConcMarkSweepGC
+8-13:-XX:CMSInitiatingOccupancyFraction=75
+8-13:-XX:+UseCMSInitiatingOccupancyOnly
 
 ## Locale
 # Set the locale language

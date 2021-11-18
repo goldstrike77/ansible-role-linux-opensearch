@@ -3,8 +3,8 @@
     "logstash-cisco-asa*"
   ],
   "settings": {
-    "refresh_interval": "{{ opensearch_logstash_arg.index_refresh_interval }}",
-    "number_of_shards": "{{ opensearch_servers | length }}"
+    "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",
+    "number_of_shards": "{{ os_servers | length }}"
   },
   "mappings": {
     "properties": {
