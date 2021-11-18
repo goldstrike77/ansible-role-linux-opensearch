@@ -2,8 +2,10 @@
   "index_patterns": [
     "logstash-syslog-beats*"
   ],
-  "settings": {
-    "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",
-    "number_of_shards": "{{ os_servers | length }}"
+  "template": {
+    "settings": {
+      "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",
+      "number_of_shards": "{{ os_servers | length }}"
+    }
   }
 }

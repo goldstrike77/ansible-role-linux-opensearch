@@ -13,16 +13,16 @@
     state: 'restarted'
     daemon_reload: 'yes'
 
-- name: Restart Kibana exporter service.
+- name: Restart LogStash service.
   systemd:
-    name: 'kibana_exporter.service'
+    name: 'logstash.service'
     enabled: 'yes'
     state: 'restarted'
     daemon_reload: 'yes'
 
-- name: Restart LogStash service.
+- name: Restart Kibana exporter service.
   systemd:
-    name: 'logstash.service'
+    name: 'kibana_exporter.service'
     enabled: 'yes'
     state: 'restarted'
     daemon_reload: 'yes'

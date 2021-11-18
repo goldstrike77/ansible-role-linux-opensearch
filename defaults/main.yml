@@ -1,10 +1,6 @@
 ---
 # General parameters #
 os_is_install: false # A boolean to determine whether or not to install the Opensearch.
-os_version: '1.1.0' # Specify the Opensearch version.
-os_logstash_version: '7.13.2' # Specify the Logstash version.
-os_data_path: '/data' # Specify the Opensearch storage directory.
-os_soft_path: '/usr/share'
 os_cluster: 'siem' # Specify name for your Opensearch cluster.
 os_admin_pass: 'changeme' # The password for administrator.
 os_rotate_day: '180' # Specify the logs retention days.
@@ -12,6 +8,10 @@ os_heap_size: '3g' # Specify the maximum memory allocation pool for a Java virtu
 os_logstash_heap_size: '2g' # Specify the maximum memory allocation pool for a Java virtual machine on LogStash.
 os_memory_lock: false # A boolean to determine whether or not lock the process address space into memory on startup.
 os_dashboards_proxy: false # A boolean to determine whether or not to mount Kibana at if you are running behind a proxy.
+os_version: '1.1.0' # Specify the Opensearch version.
+os_logstash_version: '7.13.2' # Specify the Logstash version.
+os_data_path: '/data' # Specify the Opensearch storage directory.
+os_soft_path: '/usr/share' # Specify the Opensearch installation directory.
 
 # Role dependencies #
 os_ngx_dept: true # A boolean to determine whether or not to proxy web interface and API traffic using NGinx.
@@ -58,7 +58,7 @@ os_ngx_port_https: '443' # Defines NGinx HTTPs listen port.
 
 # Opensearch parameters #
 os_arg:
-  user: 'opensearch' # Jenkins running user.
+  user: 'opensearch' # Opensearch running user.
   action_destructive_requires_name: true # Restricts deletions to specific names, instead of allowing the special _all or wildcard options.
   cluster_max_shards_per_node: '10000' # Controls the number of shards allowed in the cluster per data node.
   http_compression: true # A boolean to determine whether or not to compression when possible with Accept-Encoding.

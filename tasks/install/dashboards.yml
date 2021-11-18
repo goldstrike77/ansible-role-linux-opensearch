@@ -1,3 +1,4 @@
+---
 - name: Check current Opensearch dashboards version.
   command: 'grep {{ os_version }} {{ os_soft_path }}/opensearch-dashboards/package.json'
   register: os_dashboards_current_version

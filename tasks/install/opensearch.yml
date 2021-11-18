@@ -1,3 +1,4 @@
+---
 - name: Check current Opensearch version.
   command: 'grep {{ os_version }} {{ os_soft_path }}/opensearch/manifest.yml'
   register: os_current_version

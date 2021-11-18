@@ -1,3 +1,4 @@
+---
 - name: Check current Logstash version.
   command: 'grep {{ os_version }} {{ os_soft_path }}/logstash/Gemfile.lock'
   register: os_logstash_current_version
@@ -18,4 +19,4 @@
   retries: 5
   delay: 2
   when: os_logstash_current_version.rc == 2 or os_version not in os_logstash_current_version.stdout
-#  notify: Restart Logstash service.
+  notify: Restart Logstash service.
