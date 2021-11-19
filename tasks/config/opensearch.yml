@@ -22,6 +22,7 @@
     mode: '0600'
     owner: 'root'
     group: 'root'
-  when: os_servers[0] in ansible_default_ipv4.address
+  when: 
+    - os_servers[0] in ansible_default_ipv4.address
+    - not os_data_result.stat.exists
   no_log: true
-  when: not os_data_result.stat.exists

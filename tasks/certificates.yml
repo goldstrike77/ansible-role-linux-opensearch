@@ -20,6 +20,7 @@
       synchronize:
         src: 'files/ssl'
         dest: '{{ os_soft_path }}/{{ item }}/config'
+        rsync_path: '/usr/bin/rsync'
         owner: false
         group: false
         mode: 'push'

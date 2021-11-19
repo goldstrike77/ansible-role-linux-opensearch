@@ -13,7 +13,7 @@
 
 - name: Geolocation database download.
   unarchive:
-    src: "http://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=SdCj43scfhnayMbp&suffix=tar.gz"
+    src: "http://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=yALnASDV923bFKIC&suffix=tar.gz"
     dest: '{{ os_soft_path }}/logstash/config'
     owner: '{{ os_arg.user }}'
     group: '{{ os_arg.user }}'
