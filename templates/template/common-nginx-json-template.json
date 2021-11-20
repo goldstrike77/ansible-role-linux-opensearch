@@ -1,7 +1,7 @@
 {
   "order": {{ index + 200 }},
   "index_patterns": [
-    "logstash-nginx-json*"
+    "logstash-common-nginx-json*"
   ],
   "settings": {
     "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",

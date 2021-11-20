@@ -35,21 +35,35 @@ os_logstash_arg:
   pipeline_batch_size: '{{ ansible_processor_vcpus * 250 }}' # How many events to retrieve from inputs before sending to workers.
   pipeline_batch_delay: '100' # How long to wait in milliseconds while polling for the next event.
 os_logstash_inputs_arg: # Define the global common inputs parameters.
-#  - name: 'cisco-asa'
-#    protocol: 'udp'
-#    port: '10514'
-#  - name: 'syslog-rfc'
-#    protocol: 'syslog'
-#    port: '1514'
-#  - name: 'syslog-beats'
-#    protocol: 'beats'
-#    port: '5044'
-  - name: 'syslog-gelf'
-    protocol: 'udp'
-    port: '12201'
-#  - name: 'nginx-json'
-#    protocol: 'syslog'
-#    port: '12301'
+  common:
+#    - name: 'cisco-asa'
+#      protocol: 'udp'
+#      port: '10514'
+#    - name: 'syslog-rfc'
+#      protocol: 'syslog'
+#      port: '1514'
+#    - name: 'syslog-beats'
+#      protocol: 'beats'
+#      port: '5044'
+    - name: 'syslog-gelf'
+      protocol: 'udp'
+      port: '12201'
+#    - name: 'nginx-json'
+#      protocol: 'syslog'
+#      port: '12301'
+#  azure:
+#    eventhub:
+#      storage: "DefaultEndpointsProtocol=https;AccountName=stlearnp001;AccountKey=UqqSKWXPrl07eTwbh6aTPC0qXnW6SZbE/XkGqVe/AmpExkwSeLW634CcgIKqpZ/bDbLg5lBKqN6ERkFTR8M8gQ==;EndpointSuffix=core.chinacloudapi.cn"
+#      eventhub: "Endpoint=sb://evhns-learn-prd-001.servicebus.chinacloudapi.cn/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=8k7bSp1lH5neIJZcdCnQkg5ZLjNWtLRNSxaa/P9ZLrU="
+#      hubs:
+#        - 'activity-logs'
+#        - 'logs-cluster-autoscaler'
+#        - 'logs-guard'
+#        - 'logs-kube-apiserver'
+#        - 'logs-kube-audit'
+#        - 'logs-kube-audit-admin'
+#        - 'logs-kube-controller-manager'
+#        - 'logs-kube-scheduler'
 
 # NGinx parameters #
 os_ngx_domain: 'siem.example.com' # Defines domain name.

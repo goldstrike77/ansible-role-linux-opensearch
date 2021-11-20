@@ -1,7 +1,7 @@
 {
   "order": {{ index + 200 }},
   "index_patterns": [
-    "logstash-syslog-gelf*"
+    "logstash-common-syslog-beats*"
   ],
   "settings": {
     "refresh_interval": "{{ os_logstash_arg.index_refresh_interval }}",

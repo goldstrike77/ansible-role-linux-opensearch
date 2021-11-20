@@ -11,6 +11,11 @@
     - 'template'
     - 'patterns'
 
+- name: Check if Geolocation database exists.
+  stat:
+    path: '{{ os_soft_path }}/logstash/config/GeoLite2-City.mmdb'
+  register: os_geo_db_result
+
 - name: Geolocation database download.
   unarchive:
     src: "http://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=yALnASDV923bFKIC&suffix=tar.gz"
@@ -29,49 +34,69 @@
   until: os_logstash_geo_file_download is succeeded
   retries: 5
   delay: 2
+  when: not os_geo_db_result.stat.exists
   changed_when: false
   failed_when: false
 
-- name: LogStash configuration file transfer.
-  template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.owner }}'
-    mode: '{{ item.mode }}'
-  loop: '{{ os_logstash_conf }}'
-  notify: Restart LogStash service.
+- name: Logstash common input operations.
+  block:
+    - name: Logstash input configuration file transfer.
+      template:
+        src: 'conf/common-{{ item.name }}.conf'
+        dest: '{{ os_soft_path }}/logstash/config/conf.d/common-{{ item.name }}.conf'
+        backup: 'yes'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
+        mode: '0640'
+      loop: '{{ os_logstash_inputs_arg.common }}'
+      notify: Restart LogStash service.
+    - name: Logstash input template file transfer.
+      template:
+        src: 'template/common-{{ item.name }}-template.json'
+        dest: '{{ os_soft_path }}/logstash/config/template/common-{{ item.name }}-template.json'
+        backup: 'yes'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
+        mode: '0640'
+      loop: '{{ os_logstash_inputs_arg.common }}'
+      loop_control:
+        index_var: index
+      notify: Restart LogStash service.
+    - name: Logstash input pattern file transfer.
+      copy:
+        src: 'pattern/esguardian-{{ item.name }}'
+        dest: '{{ os_soft_path }}/logstash/config/patterns/esguardian-{{ item.name }}'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
+        mode: '0640'
+      loop: '{{ os_logstash_inputs_arg.common }}'
+      notify: Restart LogStash service.
+  when: os_logstash_inputs_arg.common is defined
 
-- name: LogStash input configuration file transfer.
-  template:
-    src: 'conf/{{ item.name }}.conf'
-    dest: '{{ os_soft_path }}/logstash/config/conf.d/{{ item.name }}.conf'
-    backup: 'yes'
-    owner: '{{ os_arg.user }}'
-    group: '{{ os_arg.user }}'
-    mode: '0640'
-  loop: '{{ os_logstash_inputs_arg }}'
-  notify: Restart LogStash service.
-
-- name: Logstash input template file transfer.
-  template:
-    src: 'template/logstash-{{ item.name }}-template.json'
-    dest: '{{ os_soft_path }}/logstash/config/template/logstash-{{ item.name }}-template.json'
-    backup: 'yes'
-    owner: '{{ os_arg.user }}'
-    group: '{{ os_arg.user }}'
-    mode: '0640'
-  loop: '{{ os_logstash_inputs_arg }}'
-  loop_control:
-    index_var: index
-  notify: Restart LogStash service.
-
-- name: Logstash input pattern file transfer.
-  copy:
-    src: 'pattern/esguardian-{{ item.name }}'
-    dest: '{{ os_soft_path }}/logstash/config/patterns/esguardian-{{ item.name }}'
-    owner: '{{ os_arg.user }}'
-    group: '{{ os_arg.user }}'
-    mode: '0640'
-  loop: '{{ os_logstash_inputs_arg }}'
-  notify: Restart LogStash service.
+- name: Azure Event Hubs plugin operations.
+  block:
+    - name: Logstash input configuration file transfer.
+      template:
+        src: 'conf/azure-evh.conf'
+        dest: '{{ os_soft_path }}/logstash/config/conf.d/azure-evh-{{ item }}.conf'
+        backup: 'yes'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
+        mode: '0640'
+      loop: '{{ os_logstash_inputs_arg.azure.eventhub.hubs }}'
+      notify: Restart LogStash service.
+    - name: Logstash input template file transfer.
+      template:
+        src: 'template/azure-evh-template.json'
+        dest: '{{ os_soft_path }}/logstash/config/template/azure-evh-{{ item }}-template.json'
+        backup: 'yes'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
+        mode: '0640'
+      loop: '{{ os_logstash_inputs_arg.azure.eventhub.hubs }}'
+      loop_control:
+        index_var: index
+      notify: Restart LogStash service.
+  when:
+    - os_logstash_inputs_arg.azure.eventhub.hubs is defined
+    - os_servers[0] in ansible_default_ipv4.address

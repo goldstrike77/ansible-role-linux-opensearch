@@ -20,7 +20,7 @@
         permanent: 'true'
         immediate: 'true'
         state: 'enabled'
-      loop: '{{ os_logstash_inputs_arg }}'
+      loop: '{{ os_logstash_inputs_arg.common }}'
     - name: Allow Logstash inputs UDP ports.
       firewalld:
         port: "{{ item.port }}/udp"
@@ -28,7 +28,7 @@
         permanent: 'true'
         immediate: 'true'
         state: 'enabled'
-      loop: '{{ os_logstash_inputs_arg }}'
+      loop: '{{ os_logstash_inputs_arg.common }}'
   when:
     - services_state.ansible_facts.services["firewalld.service"] is defined
     - services_state.ansible_facts.services["firewalld.service"].state == 'running'
