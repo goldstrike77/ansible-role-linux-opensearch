@@ -1,4 +1,20 @@
 ---
+- name: Exporter configure file transfer.
+  template:
+    src: '{{ item }}_exporter.default'
+    dest: '/etc/default'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    mode: '0644'
+  loop:
+    - 'elasticsearch'
+    - 'kibana'
+    - 'logstash'
+  notify:
+    - Restart ElasticSearch exporter service.
+    - Restart Kibana exporter service.
+    - Restart LogStash exporter service.
+
 - name: Install the ElasticSearch exporter packages.
   package:
     name: '{{ os_exporter_packages }}'
@@ -10,65 +26,30 @@
   retries: 5
   delay: 2
 
-- name: ElasticSearch exporter configure file transfer.
-  template:
-    src: 'elasticsearch_exporter.default'
-    dest: '/etc/default/elasticsearch_exporter'
-    owner: 'prometheus'
-    group: 'prometheus'
-    mode: '0640'
-  notify: Restart ElasticSearch exporter service.
-
-- name: LogStash exporter program binary transfer.
+- name: Logstash & Kibana exporter program binary transfer.
   unarchive:
-    src: 'logstash_exporter.tar.xz'
+    src: '{{ item }}_exporter.tar.xz'
     dest: '/usr/local/bin'
     owner: '{{ os_arg.user }}'
     group: '{{ os_arg.user }}'
     mode: '0755'
-  notify: Restart LogStash exporter service.
+  loop:
+    - 'logstash'
+    - 'kibana'
+  notify:
+    - Restart LogStash exporter service.
+    - Restart Kibana exporter service.
 
-- name: LogStash exporter configure file transfer.
+- name: Logstash & Kibana service file transfer.
   template:
-    src: 'logstash_exporter'
-    dest: '/etc/default/logstash_exporter'
-    owner: '{{ os_arg.user }}'
-    group: '{{ os_arg.user }}'
-    mode: '0640'
-  notify: Restart LogStash exporter service.
-
-- name: LogStash service file transfer.
-  template:
-    src: 'logstash_exporter.service'
+    src: '{{ item }}_exporter.service'
     dest: '/lib/systemd/system'
     owner: 'root'
     group: 'root'
     mode: '0644'
-  notify: Restart LogStash exporter service.
-
-- name: Kibana exporter program binary transfer.
-  unarchive:
-    src: 'kibana_exporter.tar.xz'
-    dest: '/usr/local/bin'
-    owner: '{{ os_arg.user }}'
-    group: '{{ os_arg.user }}'
-    mode: '0755'
-  notify: Restart Kibana exporter service.
-
-- name: Kibana exporter configure file transfer.
-  template:
-    src: 'kibana_exporter.default'
-    dest: '/etc/default/kibana_exporter'
-    owner: '{{ os_arg.user }}'
-    group: '{{ os_arg.user }}'
-    mode: '0640'
-  notify: Restart Kibana exporter service.
-
-- name: Kibana service file transfer.
-  template:
-    src: 'kibana_exporter.service'
-    dest: '/lib/systemd/system'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  notify: Restart Kibana exporter service.
+  loop:
+    - 'logstash'
+    - 'kibana'
+  notify:
+    - Restart LogStash exporter service.
+    - Restart Kibana exporter service.

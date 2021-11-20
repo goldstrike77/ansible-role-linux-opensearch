@@ -49,11 +49,11 @@ os_exporter_collector:
   - 'es.snapshots'
 
 # Internal user password
-os_kibanaserver_pass: '{{ lookup("password", "" + group_names[0] + ":kibanaserver length=12 chars=ascii_letters,digits") }}'
-os_kibanaro_pass: '{{ lookup("password", "" + group_names[0] + ":kibanaro length=12 chars=ascii_letters,digits") }}'
-os_logstash_pass: '{{ lookup("password", "" + group_names[0] + ":logstash length=12 chars=ascii_letters,digits") }}'
-os_readall_pass: '{{ lookup("password", "" + group_names[0] + ":readall length=12 chars=ascii_letters,digits") }}'
-os_snapshotrestore_pass: '{{ lookup("password", "" + group_names[0] + ":snapshotrestore length=12 chars=ascii_letters,digits") }}'
+os_kibanaserver_pass: '{{ lookup("password", "" + os_admin_pass + ":kibanaserver length=12 chars=ascii_letters,digits") }}'
+os_kibanaro_pass: '{{ lookup("password", "" + os_admin_pass + ":kibanaro length=12 chars=ascii_letters,digits") }}'
+os_logstash_pass: '{{ lookup("password", "" + os_admin_pass + ":logstash length=12 chars=ascii_letters,digits") }}'
+os_readall_pass: '{{ lookup("password", "" + os_admin_pass + ":readall length=12 chars=ascii_letters,digits") }}'
+os_snapshotrestore_pass: '{{ lookup("password", "" + os_admin_pass + ":snapshotrestore length=12 chars=ascii_letters,digits") }}'
 
 os_python_dependent_packages:
   - 'pip==20.3.4'
