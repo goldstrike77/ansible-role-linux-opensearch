@@ -4,7 +4,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-RuntimeDirectory={{ os_soft_path }}/opensearch-dashboards
+RuntimeDirectory=opensearch-dashboards
 PrivateTmp=true
 
 WorkingDirectory={{ os_soft_path }}/opensearch-dashboards

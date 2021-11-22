@@ -2,7 +2,7 @@
 - name: Exporter configure file transfer.
   template:
     src: '{{ item }}_exporter.default'
-    dest: '/etc/default'
+    dest: '/etc/default/{{ item }}_exporter'
     owner: '{{ os_arg.user }}'
     group: '{{ os_arg.user }}'
     mode: '0644'
