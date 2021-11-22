@@ -15,6 +15,25 @@
   notify: Restart Opensearch service.
   when: not os_data_result.stat.exists
 
+- name: Check Opensearch if initialized.
+  lineinfile:
+    path: '{{ os_soft_path }}/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml'
+    regexp: '^prometheus:'
+    line: 'prometheus:'
+    state: 'present'
+  check_mode: yes
+  register: os_init_result
+
+- name: Initial users that you want to add to the security plugin internal user database.
+  template:
+    src: 'internal_users.yml'
+    dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml'
+    owner: '{{ os_arg.user }}'
+    group: '{{ os_arg.user }}'
+    mode: '600'
+  when: os_init_result is changed
+  no_log: true
+
 - name: Opensearch internal users password outputs.
   template:
     src: 'os_internal_users.passwd'
@@ -24,5 +43,5 @@
     group: 'root'
   when: 
     - os_servers[0] in ansible_default_ipv4.address
-    - not os_data_result.stat.exists
+    - os_init_result is changed
   no_log: true

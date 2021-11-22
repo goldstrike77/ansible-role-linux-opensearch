@@ -15,7 +15,7 @@
     dest: '{{ os_soft_path }}/{{ item }}'
     state: 'directory'
     owner: '{{ os_arg.user }}'
-    mode: '755'
+    mode: '750'
   loop:
     - 'opensearch'
     - 'opensearch-dashboards'

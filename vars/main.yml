@@ -26,8 +26,7 @@ os_conf:
   - { src: 'opensearch.service', dest: '/lib/systemd/system/opensearch.service', mode: '644', owner: 'root' }
   - { src: 'opensearch-performance-analyzer.service', dest: '/lib/systemd/system/opensearch-performance-analyzer.service', mode: '644', owner: 'root' }
   - { src: 'jvm.options.opensearch', dest: '{{ os_soft_path }}/opensearch/config/jvm.options', mode: '600', owner: '{{ os_arg.user }}' }
-  - { src: 'internal_users.yml', dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml', mode: '644', owner: '{{ os_arg.user }}' }
-  - { src: 'performance-analyzer.properties', dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-performance-analyzer/pa_config/performance-analyzer.properties', mode: '644', owner: '{{ os_arg.user }}' }
+  - { src: 'performance-analyzer.properties', dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-performance-analyzer/pa_config/performance-analyzer.properties', mode: '600', owner: '{{ os_arg.user }}' }
 
 os_dashboards_conf:
   - { src: 'opensearch_dashboards.yml', dest: '{{ os_soft_path }}/opensearch-dashboards/config/opensearch_dashboards.yml', mode: '640', owner: '{{ os_arg.user }}' }
