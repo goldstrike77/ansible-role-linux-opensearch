@@ -1,41 +1,34 @@
 ---
 - name: Check private key exists.
   stat:
-    path: '{{ os_soft_path }}/opensearch/config/ssl/server.key'
+    path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/server.key'
   register: check_cert_keys
 
 - name: Certificate Signing operation.
   block:
-    - name: Install requirement python package.
-      pip:
-        name: '{{ item }}'
-        state: 'present'
-        extra_args: '--default-timeout=120 -i https://{{ os_pypi_url }}/pypi/simple/ --trusted-host {{ os_pypi_url }}'
-      loop: '{{ os_python_dependent_packages }}'
-      register: os_python_status
-      until: os_python_status is succeeded
-      retries: 5
-      delay: 2
+    - name: Creating certificate folder.
+      file:
+        dest: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl'
+        state: 'directory'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
+        mode: '600'
     - name: Selfsigned CA file transfer.
-      synchronize:
-        src: 'files/ssl'
-        dest: '{{ os_soft_path }}/{{ item }}/config'
-        rsync_path: '/usr/bin/rsync'
-        owner: false
-        group: false
-        mode: 'push'
+      copy:
+        src: 'files/ssl/{{ item }}'
+        dest: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl'
+        owner: '{{ os_arg.user }}'
+        group: '{{ os_arg.user }}'
+        mode: '600'
       loop:
-        - 'opensearch'
-        - 'opensearch-dashboards'
+        - 'ca-cert.pem'
+        - 'ca-key.pem'
     - name: "Generate an OpenSSL private key with PKCS #8 format."
-      shell: 'openssl genpkey -out {{ os_soft_path }}/{{ item }}/config/ssl/server.key -algorithm RSA -pkeyopt rsa_keygen_bits:4096'
-      loop:
-        - 'opensearch'
-        - 'opensearch-dashboards'
+      shell: 'openssl genpkey -out {{ os_soft_path }}/{{ os_cert_components }}/config/ssl/server.key -algorithm RSA -pkeyopt rsa_keygen_bits:4096'
     - name: Generate an OpenSSL Certificate Signing Request.
       openssl_csr:
-        path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.csr'
-        privatekey_path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.key'
+        path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/server.csr'
+        privatekey_path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/server.key'
         select_crypto_backend: 'cryptography'
         common_name: '{{ os_cluster| upper }}'
         subject_alt_name:
@@ -46,25 +39,19 @@
           - 'IP:{{ ansible_default_ipv4.address }}'
         owner: '{{ os_arg.user }}'
         group: '{{ os_arg.user }}'
-        mode: '640'
+        mode: '600'
         state: 'present'
-      loop:
-        - 'opensearch'
-        - 'opensearch-dashboards'
     - name: Generate an OpenSSL certificate signed with your own CA certificate.
       openssl_certificate:
-        path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.crt'
-        csr_path: '{{ os_soft_path }}/{{ item }}/config/ssl/server.csr'
-        ownca_path: '{{ os_soft_path }}/{{ item }}/config/ssl/ca-cert.pem'
-        ownca_privatekey_path: '{{ os_soft_path }}/{{ item }}/config/ssl/ca-key.pem'
+        path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/server.crt'
+        csr_path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/server.csr'
+        ownca_path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/ca-cert.pem'
+        ownca_privatekey_path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/ca-key.pem'
         select_crypto_backend: 'cryptography'
         ownca_not_after: '+7305d'
         provider: 'ownca'
         owner: '{{ os_arg.user }}'
         group: '{{ os_arg.user }}'
-        mode: '640'
+        mode: '600'
         state: 'present'
-      loop:
-        - 'opensearch'
-        - 'opensearch-dashboards'
   when: not check_cert_keys.stat.exists or check_cert_keys.stat.size == 0

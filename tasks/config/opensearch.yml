@@ -19,7 +19,7 @@
   template:
     src: 'os_internal_users.passwd'
     dest: '/tmp/os_internal_users.passwd'
-    mode: '0600'
+    mode: '400'
     owner: 'root'
     group: 'root'
   when: 

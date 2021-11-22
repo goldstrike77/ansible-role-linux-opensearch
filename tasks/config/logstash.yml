@@ -11,6 +11,16 @@
     - 'template'
     - 'patterns'
 
+- name: LogStash configuration file transfer.
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.owner }}'
+    mode: '{{ item.mode }}'
+  loop: '{{ os_logstash_conf }}'
+  notify: Restart LogStash service.
+
 - name: Check if Geolocation database exists.
   stat:
     path: '{{ os_soft_path }}/logstash/config/GeoLite2-City.mmdb'
