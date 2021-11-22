@@ -12,7 +12,7 @@ __Table of Contents__
 - [Overview](#overview)
 - [Requirements](#requirements)
   * [Operating systems](#operating-systems)
-  * [opensearch Versions](#opensearch-versions)
+  * [Opensearch Versions](#opensearch-versions)
 - [ Role variables](#Role-variables)
   * [Main Configuration](#Main-parameters)
   * [Other Configuration](#Other-parameters)
@@ -76,7 +76,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `os_logstash_arg.pipeline_workers`: The number of workers.
 * `os_logstash_arg.pipeline_batch_size`: How many events to retrieve from inputs before sending to workers.
 * `os_logstash_arg.pipeline_batch_delay`: How long to wait in milliseconds while polling for the next event.
-* `os_logstash_inputs_arg`: # Define the global common inputs parameters.
+* `os_logstash_inputs_arg`: Define the global common inputs parameters.
 
 ##### NGinx parameters
 * `os_ngx_domain`: Defines domain name.
@@ -132,7 +132,7 @@ Including an example of how to use your role (for instance, with variables passe
 - hosts: all
   roles:
      - role: ansible-role-linux-opensearch
-       opensearch_cluster: 'siem'
+       os_cluster: 'siem'
 ```
 
 ### Combination of group vars and playbook
