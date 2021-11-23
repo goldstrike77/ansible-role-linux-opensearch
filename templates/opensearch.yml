@@ -55,9 +55,9 @@ plugins.security.ssl.http.pemtrustedcas_filepath: {{ os_soft_path }}/opensearch/
 plugins.security.allow_unsafe_democertificates: true
 plugins.security.allow_default_init_securityindex: true
 plugins.security.authcz.admin_dn:
-  - CN={{ os_cluster| upper }}
+  - "CN=SIEM"
 plugins.security.nodes_dn:
-  - CN={{ os_cluster| upper }}
+  - "CN=ROOT,OU=Unit,O=Company,L=Mount Olympus,S=Mars,C=XX"
 plugins.security.audit.type: internal_opensearch
 plugins.security.enable_snapshot_restore_privilege: true
 plugins.security.check_snapshot_restore_write_privileges: true
