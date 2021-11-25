@@ -8,7 +8,7 @@ os_heap_size: '3g' # Specify the maximum memory allocation pool for a Java virtu
 os_logstash_heap_size: '2g' # Specify the maximum memory allocation pool for a Java virtual machine on LogStash.
 os_memory_lock: false # A boolean to determine whether or not lock the process address space into memory on startup.
 os_dashboards_proxy: false # A boolean to determine whether or not to mount Kibana at if you are running behind a proxy.
-os_version: '1.1.0' # Specify the Opensearch version.
+os_version: '1.2.0' # Specify the Opensearch version.
 os_logstash_version: '7.13.2' # Specify the Logstash version.
 os_data_path: '/data' # Specify the Opensearch storage directory.
 os_soft_path: '/usr/share' # Specify the Opensearch installation directory.
@@ -78,6 +78,26 @@ os_arg:
   http_compression: true # A boolean to determine whether or not to compression when possible with Accept-Encoding.
   http_cors_enabled: true # Enable or disable cross-origin resource sharing.
   http_cors_allow_methods: 'HEAD, GET, POST, PUT, DELETE' # Which methods to allow.
+
+# LDAP Authentication #
+#os_ldap_arg:
+#  hosts:
+#    - '10.10.10.1:389'
+#    - '10.10.10.2:389'
+#  ssl: false
+#  start_tls: false
+#  bind_dn: 'cn=Administrator,cn=users,dc=example,dc=com'
+#  bind_pass: 'changeme'
+#  userbase: 'dc=example,dc=com'
+#  rolebase: 'ou=groups,dc=example,dc=com'
+#  skip_users:
+#    - 'admin'
+#    - 'kibanaserver'
+#    - 'kibanaro'
+#    - 'logstash'
+#    - 'readall'
+#    - 'snapshotrestore'
+#    - 'prometheus'
 
 # Service Mesh #
 environments: 'prd' # Define the service environment.

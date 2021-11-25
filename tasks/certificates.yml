@@ -23,6 +23,15 @@
       loop:
         - 'ca-cert.pem'
         - 'ca-key.pem'
+    - name: Import Selfsigned CA certificate to cacerts keystore.
+      java_cert:
+        cert_path: '{{ os_soft_path }}/{{ os_cert_components }}/config/ssl/ca-cert.pem'
+        cert_alias: 'default'
+        keystore_path: '{{ os_soft_path }}/{{ os_cert_components }}/jdk/lib/security/cacerts'
+        keystore_pass: 'changeit'
+        executable: '{{ os_soft_path }}/{{ os_cert_components }}/jdk/bin/keytool'
+        state: 'present'
+      when: os_cert_components == 'opensearch'
     - name: "Generate an OpenSSL private key with PKCS #8 format."
       shell: 'openssl genpkey -out {{ os_soft_path }}/{{ os_cert_components }}/config/ssl/server.key -algorithm RSA -pkeyopt rsa_keygen_bits:4096'
     - name: Generate an OpenSSL Certificate Signing Request.

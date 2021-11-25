@@ -26,11 +26,14 @@
 
 - name: Initial users that you want to add to the security plugin internal user database.
   template:
-    src: 'internal_users.yml'
-    dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml'
+    src: '{{ item }}'
+    dest: '{{ os_soft_path }}/opensearch/plugins/opensearch-security/securityconfig/{{ item }}'
     owner: '{{ os_arg.user }}'
     group: '{{ os_arg.user }}'
     mode: '600'
+  loop:
+    - 'internal_users.yml'
+    - 'config.yml'
   when: os_init_result is changed
   no_log: true
 

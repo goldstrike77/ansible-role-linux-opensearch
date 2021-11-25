@@ -1,0 +1,132 @@
+---
+_meta:
+  type: "config"
+  config_version: 2
+
+config:
+  dynamic:
+    http:
+      anonymous_auth_enabled: false
+      xff:
+        enabled: false
+        internalProxies: '192\.168\.0\.10|192\.168\.0\.11' # regex pattern
+    authc:
+      kerberos_auth_domain:
+        http_enabled: false
+        transport_enabled: false
+        order: 6
+        http_authenticator:
+          type: kerberos
+          challenge: true
+          config:
+            krb_debug: false
+            strip_realm_from_principal: true
+        authentication_backend:
+          type: noop
+      basic_internal_auth_domain:
+        description: "Authenticate via HTTP Basic against internal users database"
+        http_enabled: true
+        transport_enabled: true
+        order: 4
+        http_authenticator:
+          type: basic
+          challenge: true
+        authentication_backend:
+          type: intern
+      proxy_auth_domain:
+        description: "Authenticate via proxy"
+        http_enabled: false
+        transport_enabled: false
+        order: 3
+        http_authenticator:
+          type: proxy
+          challenge: false
+          config:
+            user_header: "x-proxy-user"
+            roles_header: "x-proxy-roles"
+        authentication_backend:
+          type: noop
+      jwt_auth_domain:
+        description: "Authenticate via Json Web Token"
+        http_enabled: false
+        transport_enabled: false
+        order: 0
+        http_authenticator:
+          type: jwt
+          challenge: false
+          config:
+            signing_key: "base64 encoded HMAC key or public RSA/ECDSA pem key"
+            jwt_header: "Authorization"
+            jwt_url_parameter: null
+            roles_key: null
+            subject_key: null
+        authentication_backend:
+          type: noop
+      clientcert_auth_domain:
+        description: "Authenticate via SSL client certificates"
+        http_enabled: false
+        transport_enabled: false
+        order: 2
+        http_authenticator:
+          type: clientcert
+          config:
+            username_attribute: cn #optional, if omitted DN becomes username
+          challenge: false
+        authentication_backend:
+          type: noop
+{% if os_ldap_arg is defined %}
+      ldap:
+        description: "Authenticate via LDAP or Active Directory"
+        http_enabled: true
+        transport_enabled: true
+        order: 5
+        http_authenticator:
+          type: basic
+          challenge: false
+        authentication_backend:
+          type: ldap
+          config:
+            enable_ssl: {{ os_ldap_arg.ssl | default(false) | to_nice_json }}
+            enable_start_tls: {{ os_ldap_arg.start_tls | default(false) | to_nice_json }}
+            enable_ssl_client_auth: false
+            verify_hostnames: false
+            hosts:
+{% for host in os_ldap_arg.hosts %}
+            - {{ host }}
+{% endfor %}
+            bind_dn: "{{ os_ldap_arg.bind_dn }}"
+            password: "{{ os_ldap_arg.bind_pass }}"
+            userbase: "{{ os_ldap_arg.userbase }}"
+            usersearch: '(sAMAccountName={0})'
+            username_attribute: uid
+    authz:
+      roles_from_myldap:
+        description: "Authorize via LDAP or Active Directory"
+        http_enabled: true
+        transport_enabled: true
+        authorization_backend:
+          type: ldap
+          config:
+            enable_ssl: {{ os_ldap_arg.ssl | default(false) | to_nice_json }}
+            enable_start_tls: {{ os_ldap_arg.start_tls | default(false) | to_nice_json }}
+            enable_ssl_client_auth: false
+            verify_hostnames: false
+            hosts:
+{% for host in os_ldap_arg.hosts %}
+            - {{ host }}
+{% endfor %}
+            bind_dn: "{{ os_ldap_arg.bind_dn }}"
+            password: "{{ os_ldap_arg.bind_pass }}"
+            rolebase: "{{ os_ldap_arg.rolebase }}"
+            rolesearch: '(member={0})'
+            userroleattribute: null
+            userrolename: "memberOf"
+            rolename: cn
+            resolve_nested_roles: true
+            userbase: "{{ os_ldap_arg.userbase }}"
+            usersearch: '(uid={0})'
+            skip_users:
+{% for user in os_ldap_arg.skip_users %}
+              - {{ user }}
+{% endfor %}
+{% endif %}
